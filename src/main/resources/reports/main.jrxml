@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="main" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="99cedca6-cc3b-4a16-85d2-25f97ee24bbf">
+	<property name="ireport.zoom" value="1.4641000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ftrndt" class="java.util.Date"/>
+	<parameter name="ttrndt" class="java.util.Date"/>
+	<parameter name="frticket" class="java.lang.String">
+		<defaultValueExpression><![CDATA["000000"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toticket" class="java.lang.String">
+		<defaultValueExpression><![CDATA["999999"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orga" class="java.lang.String">
+		<defaultValueExpression><![CDATA["000"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="sub" class="net.sf.jasperreports.engine.JasperReport"/>
+	<parameter name="ftrndt_num" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[$P{ftrndt} != null ? Integer.parseInt(new java.text.SimpleDateFormat("yyyyMMdd").format($P{ftrndt})) : 0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ttrndt_num" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[$P{ttrndt} != null ? Integer.parseInt(new java.text.SimpleDateFormat("yyyyMMdd").format($P{ttrndt})) : 0]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+	a.orgaunit AS RC_CODE,
+	f.orgadesc AS RC_DESC,
+	a.trtype AS TRANS_TYPE,
+	d.trdesc AS TRANS_TYPE_DESC,
+	a.trid AS TRANS_ID,
+	e.triddesc AS TRANS_ID_DESC,
+	a.ticket AS TICKET_NO,
+	CAST(a.trdat AS VARCHAR(10)) AS TRANS_DATE,
+	a.prousr AS PREPARED_BY,
+	CAST('' AS VARCHAR(50)) AS REVIEWED_BY,
+	CAST('' AS VARCHAR(50)) AS APPROVED_BY,
+	a.glcode AS GL_ACCOUNT_CODE,
+	b.gldesc AS GL_ACCOUNT_DESCRIPTION,
+	a.analcode AS ANALYSIS_CODE,
+	y1.anadesc AS ANALYSIS_DESCRIPTION,
+	CASE
+		WHEN TRIM(a.sign) = '+' THEN a.lcamt
+		ELSE 0
+	END AS DEBIT,
+	CASE
+		WHEN TRIM(a.sign) = '-' THEN a.lcamt
+		ELSE 0
+	END AS CREDIT,
+	CAST(COALESCE(b1.part1, '') || COALESCE(b2.part2, '') AS VARCHAR(250)) AS PARTICULARS
+FROM
+	CFASLIB.FA0210 a
+LEFT OUTER JOIN CFASLIB.FA0211LF1 b1 ON
+	a.trdat = b1.trdat
+	AND a.orgaunit = b1.orgaunit
+	AND a.ticket = b1.ticket
+	AND a.postdate = b1.postdate
+	AND a.posttime = b1.posttime
+LEFT OUTER JOIN CFASLIB.FA0211LF2 b2 ON
+	a.trdat = b2.trdat
+	AND a.orgaunit = b2.orgaunit
+	AND a.ticket = b2.ticket
+	AND a.postdate = b2.postdate
+	AND a.posttime = b2.posttime
+LEFT OUTER JOIN CFASLIB.FA0150 y1 ON
+	a.analtype = y1.analtype
+	AND a.analcode = y1.analcode
+LEFT OUTER JOIN CFASLIB.FA0720 b ON
+	a.glcode = b.glcode
+LEFT OUTER JOIN CFASLIB.FA0710 d ON
+	a.trtype = d.trtype
+LEFT OUTER JOIN CFASLIB.FA0630 e ON
+	a.trid = e.trid
+	AND e.trline = 0
+LEFT OUTER JOIN CFASLIB.FA0740 f ON
+	a.orgaunit = f.orgaunit
+WHERE
+	a.trdat >= $P{ftrndt_num}
+	AND a.trdat <= $P{ttrndt_num}
+	AND a.ticket >= $P{frticket}
+	AND a.ticket <= $P{toticket}
+	AND a.orgaunit = $P{orga}
+	AND (a.tridtype BETWEEN '1' AND '9' OR a.tridtype IS NULL)
+ORDER BY
+	a.postdate,
+	a.posttime,
+	a.trdat,
+	a.ticket,
+	a.sign,
+	a.ticketseq]]>
+	</queryString>
+	<field name="RC_CODE" class="java.lang.String"/>
+	<field name="RC_DESC" class="java.lang.String"/>
+	<field name="TRANS_TYPE" class="java.lang.String"/>
+	<field name="TRANS_TYPE_DESC" class="java.lang.String"/>
+	<field name="TRANS_ID" class="java.lang.String"/>
+	<field name="TRANS_ID_DESC" class="java.lang.String"/>
+	<field name="TICKET_NO" class="java.lang.String"/>
+	<field name="TRANS_DATE" class="java.util.Date"/>
+	<field name="GL_ACCOUNT_CODE" class="java.lang.String"/>
+	<field name="PREPARED_BY" class="java.lang.String"/>
+	<field name="REVIEWED_BY" class="java.lang.String"/>
+	<field name="APPROVED_BY" class="java.lang.String"/>
+	<field name="GL_ACCOUNT_DESCRIPTION" class="java.lang.String"/>
+	<field name="ANALYSIS_CODE" class="java.lang.String"/>
+	<field name="ANALYSIS_DESCRIPTION" class="java.lang.String"/>
+	<field name="DEBIT" class="java.math.BigDecimal"/>
+	<field name="CREDIT" class="java.math.BigDecimal"/>
+	<field name="PARTICULARS" class="java.lang.String"/>
+	<variable name="TOTAL_DEBIT" class="java.math.BigDecimal" resetType="Group" resetGroup="TicketGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{DEBIT}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_CREDIT" class="java.math.BigDecimal" resetType="Group" resetGroup="TicketGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{CREDIT}]]></variableExpression>
+	</variable>
+	<group name="TicketGroup" isStartNewPage="true" isResetPageNumber="true">
+		<groupExpression><![CDATA[$F{TICKET_NO}]]></groupExpression>
+		<groupHeader>
+			<band height="145">
+				<staticText>
+					<reportElement x="0" y="20" width="200" height="15" uuid="77d331af-76f8-47cb-8504-a85815f96e8f"/>
+					<text><![CDATA[RC CODE & DESCRIPTION]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="35" width="200" height="15" uuid="fd03c58d-4ba9-4182-bc1d-958638f19fba"/>
+					<text><![CDATA[TRANSACTION TYPE & DESCRIPTION]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="50" width="200" height="15" uuid="157a2498-88ee-4b44-b8b5-fdd9e6b94dd4"/>
+					<text><![CDATA[TRANSACTION ID & DESCRIPTION]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="210" y="20" width="100" height="15" uuid="0576e049-1dca-47e7-99d5-448f58a3895f"/>
+					<textFieldExpression><![CDATA[$F{RC_CODE}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="210" y="35" width="100" height="15" uuid="a87d20c6-87f4-472b-b6d1-726d3d4764d2"/>
+					<textFieldExpression><![CDATA[$F{TRANS_TYPE}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="210" y="50" width="100" height="15" uuid="32c80396-995a-4c01-ab80-c607cc5c67ac"/>
+					<textFieldExpression><![CDATA[$F{TRANS_ID}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="320" y="20" width="250" height="15" uuid="2a889a41-1afb-4597-98a5-896dd7719f22"/>
+					<textFieldExpression><![CDATA[$F{RC_DESC}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="320" y="35" width="250" height="15" uuid="78cd5d20-90e4-4f60-ae05-60ded70b3d71"/>
+					<textFieldExpression><![CDATA[$F{TRANS_TYPE_DESC}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="320" y="50" width="250" height="15" uuid="f0fffd6c-4418-4241-ab82-8966e2ffddba"/>
+					<textFieldExpression><![CDATA[$F{TRANS_ID_DESC}]]></textFieldExpression>
+				</textField>
+				<rectangle>
+					<reportElement x="598" y="2" width="202" height="83" uuid="411be891-bf21-49a5-a7ed-7e2265804b02"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="601" y="5" width="103" height="15" uuid="88d3deee-84e8-4196-8038-5a401945f7ca"/>
+					<text><![CDATA[TICKET NO.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="601" y="20" width="103" height="15" uuid="34a230a4-d8a6-4ae4-9cd6-ad260a8300b6"/>
+					<text><![CDATA[TRANSACTION DATE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="601" y="35" width="103" height="15" uuid="9d654b19-921b-4b39-bee3-e943be86bc86"/>
+					<text><![CDATA[PREPARED BY]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="601" y="50" width="103" height="15" uuid="07d06cd0-953f-41cb-becd-51a118a4ebca"/>
+					<text><![CDATA[REVIEWED BY]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="601" y="65" width="103" height="15" uuid="74528ae0-9173-4644-a874-0ad62642681d"/>
+					<text><![CDATA[APPROVED BY]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="704" y="5" width="90" height="15" uuid="21a998f0-0f5c-40b7-b372-6594d67f3c37"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{TICKET_NO}]]></textFieldExpression>
+				</textField>
+				<textField pattern="MM/dd/yyyy" isBlankWhenNull="true">
+					<reportElement x="704" y="20" width="90" height="15" uuid="a1e469b5-43ae-4cdc-8a14-85ce730dba04"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{TRANS_DATE}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="704" y="35" width="90" height="15" uuid="6fbb954f-6bca-4d39-8246-f466384d6b70"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{PREPARED_BY}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="704" y="50" width="90" height="15" uuid="af8ef866-96b0-494b-82b0-f2df563ca2d4"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{REVIEWED_BY}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="704" y="65" width="90" height="15" uuid="bb6dc187-fe35-4421-8f0f-b1653d40c6c5"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{APPROVED_BY}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="100" width="802" height="1" uuid="e9264119-da33-4ec9-b194-bdb32e29e725"/>
+				</line>
+				<staticText>
+					<reportElement x="0" y="105" width="400" height="15" uuid="f5999091-f973-4b49-97f0-a535822c8d92"/>
+					<text><![CDATA[GL Account Code and Description]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="120" width="400" height="15" uuid="f1e28d10-7f70-430e-bfc6-76a07e847db4"/>
+					<text><![CDATA[Analysis Code and Description]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="445" y="110" width="125" height="15" uuid="71bebd10-15a4-4fce-88be-ea6754ae9661"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[DEBIT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="630" y="110" width="100" height="15" uuid="d2ca6861-c88b-4791-844e-199be36d95b8"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[CREDIT]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="140" width="802" height="1" uuid="d305c3da-3c2b-4a16-ae10-9ebeca1311d8"/>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="145">
+				<staticText>
+					<reportElement x="445" y="5" width="55" height="20" uuid="d59043a7-b78e-49de-ae23-4d0869840605"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[TOTAL]]></text>
+				</staticText>
+				<textField pattern="#,##0.00">
+					<reportElement x="500" y="5" width="125" height="15" uuid="7da583d2-f13a-43e3-8750-fe738e4e9a21"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{TOTAL_DEBIT}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00">
+					<reportElement x="630" y="5" width="100" height="15" uuid="dbeb0007-2496-4306-96cc-bc3c87b50de6"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{TOTAL_CREDIT}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="500" y="23" width="230" height="1" uuid="b98f3000-45a5-470d-9345-153e9fd86339"/>
+				</line>
+				<line>
+					<reportElement x="500" y="26" width="230" height="1" uuid="1eab4391-dd27-43c1-81b2-80c9cd1025b7"/>
+				</line>
+				<staticText>
+					<reportElement x="12" y="55" width="100" height="20" uuid="591330e0-8d1c-47a8-ab3b-b9b670283b86"/>
+					<textElement verticalAlignment="Top"/>
+					<text><![CDATA[Particulars]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="127" y="45" width="673" height="55" uuid="f38e55fd-db5a-4630-b1ce-08d916a50399"/>
+				</rectangle>
+				<textField isBlankWhenNull="true">
+					<reportElement x="132" y="48" width="663" height="49" uuid="faad8263-5a38-45fe-bb57-c7edc9254806"/>
+					<textFieldExpression><![CDATA[$F{PARTICULARS}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="110" width="220" height="28" uuid="3fb9968d-a1ff-4a3d-94c2-2d36486cfdec"/>
+					<textElement>
+						<font size="8" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[This is a system-generated report and
+does not require a signature.]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="45" splitType="Stretch">
+			<staticText>
+				<reportElement x="200" y="0" width="350" height="20" uuid="0a85526c-0a50-4350-9481-7e0d9400ed83"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BANGKO SENTRAL NG PILIPINAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="20" width="350" height="20" uuid="e1e5a69b-51a4-4b8c-b6ee-ce030f62b10a"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Ticket]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="598" y="0" width="115" height="13" uuid="60c679a3-bb9d-4e7f-a786-762ab2cb4986"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Generation Date]]></text>
+			</staticText>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement x="713" y="0" width="89" height="13" uuid="93c175be-d660-4565-806f-d57547de7d57"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="598" y="13" width="115" height="13" uuid="1b44bf07-a41e-488f-a34b-cec4e54f695b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Time]]></text>
+			</staticText>
+			<textField pattern="HH.mm.ss">
+				<reportElement x="713" y="13" width="89" height="13" uuid="4be14a13-a28f-49ae-a854-9296f977c7bf"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+<detail>
+    <band height="45" splitType="Stretch">
+        <subreport>
+            <reportElement x="0" y="0" width="802" height="45" uuid="e4827101-9871-4192-b102-123456789abc"/>
+            <dataSourceExpression><![CDATA[$P{REPORT_DATA_SOURCE}]]></dataSourceExpression>
+            <subreportExpression><![CDATA[$P{sub}]]></subreportExpression>
+        </subreport>
+    </band>
+</detail>
+</jasperReport>

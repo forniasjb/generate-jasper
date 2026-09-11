@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app
+        xmlns="https://jakarta.ee/xml/ns/jakartaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+        version="6.0">
+
+    <display-name>generate-jasper</display-name>
+
+    <!-- ============================================================ -->
+    <!-- WELD CDI -->
+    <!-- ============================================================ -->
+
+    <listener>
+        <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
+    </listener>
+
+    <!-- ============================================================ -->
+    <!-- JSF SERVLET -->
+    <!-- ============================================================ -->
+
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+
+
+    <!-- ============================================================ -->
+    <!-- WELCOME PAGE -->
+    <!-- ============================================================ -->
+
+    <welcome-file-list>
+        <welcome-file>index.xhtml</welcome-file>
+    </welcome-file-list>
+
+
+    <!-- ============================================================ -->
+    <!-- JSF CONFIGURATION -->
+    <!-- ============================================================ -->
+
+    <context-param>
+        <param-name>jakarta.faces.PROJECT_STAGE</param-name>
+        <param-value>Development</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>jakarta.faces.FACELETS_REFRESH_PERIOD</param-name>
+        <param-value>2</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>jakarta.faces.FACELETS_SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>jakarta.faces.STATE_SAVING_METHOD</param-name>
+        <param-value>server</param-value>
+    </context-param>
+
+
+    <!-- ============================================================ -->
+    <!-- PRIMEFACES -->
+    <!-- ============================================================ -->
+
+    <context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>saga</param-value>
+    </context-param>
+
+
+    <!-- ============================================================ -->
+    <!-- SESSION -->
+    <!-- ============================================================ -->
+
+    <session-config>
+        <session-timeout>30</session-timeout> <!-- Timeout in minutes -->
+    </session-config>
+
+
+    <!-- ============================================================ -->
+    <!-- ERROR PAGES -->
+    <!-- ============================================================ -->
+
+    <error-page>
+        <exception-type>jakarta.faces.application.ViewExpiredException</exception-type>
+        <location>/index.xhtml</location>
+    </error-page>
+
+
+    <!-- ============================================================ -->
+    <!-- MIME TYPES -->
+    <!-- ============================================================ -->
+
+    <mime-mapping>
+        <extension>ttf</extension>
+        <mime-type>font/ttf</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>woff</extension>
+        <mime-type>font/woff</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>woff2</extension>
+        <mime-type>font/woff2</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>otf</extension>
+        <mime-type>font/otf</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>eot</extension>
+        <mime-type>application/vnd.ms-fontobject</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>svg</extension>
+        <mime-type>image/svg+xml</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>ico</extension>
+        <mime-type>image/x-icon</mime-type>
+    </mime-mapping>
+
+</web-app>
