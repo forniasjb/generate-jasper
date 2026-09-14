@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="main" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="99cedca6-cc3b-4a16-85d2-25f97ee24bbf">
-	<property name="ireport.zoom" value="1.4641000000000006"/>
+	<property name="ireport.zoom" value="1.9487171000000014"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="ftrndt" class="java.util.Date"/>
@@ -78,15 +78,13 @@ WHERE
 	AND a.trdat <= $P{ttrndt_num}
 	AND a.ticket >= $P{frticket}
 	AND a.ticket <= $P{toticket}
-	AND a.orgaunit = $P{orga}
 	AND (a.tridtype BETWEEN '1' AND '9' OR a.tridtype IS NULL)
 ORDER BY
 	a.postdate,
 	a.posttime,
 	a.trdat,
 	a.ticket,
-	a.sign,
-	a.ticketseq]]>
+	a.sign]]>
 	</queryString>
 	<field name="RC_CODE" class="java.lang.String"/>
 	<field name="RC_DESC" class="java.lang.String"/>
@@ -322,13 +320,31 @@ does not require a signature.]]></text>
 			</textField>
 		</band>
 	</title>
-<detail>
-    <band height="45" splitType="Stretch">
-        <subreport>
-            <reportElement x="0" y="0" width="802" height="45" uuid="e4827101-9871-4192-b102-123456789abc"/>
-            <dataSourceExpression><![CDATA[$P{REPORT_DATA_SOURCE}]]></dataSourceExpression>
-            <subreportExpression><![CDATA[$P{sub}]]></subreportExpression>
-        </subreport>
-    </band>
-</detail>
+	<detail>
+		<band height="45" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="802" height="45" uuid="e4827101-9871-4192-b102-123456789abc"/>
+				<subreportParameter name="GL_ACCOUNT_CODE_PARAM">
+					<subreportParameterExpression><![CDATA[$F{GL_ACCOUNT_CODE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="GL_ACCOUNT_DESCRIPTION_PARAM">
+					<subreportParameterExpression><![CDATA[$F{GL_ACCOUNT_DESCRIPTION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ANALYSIS_CODE_PARAM">
+					<subreportParameterExpression><![CDATA[$F{ANALYSIS_CODE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ANALYSIS_DESCRIPTION_PARAM">
+					<subreportParameterExpression><![CDATA[$F{ANALYSIS_DESCRIPTION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DEBIT_PARAM">
+					<subreportParameterExpression><![CDATA[$F{DEBIT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CREDIT_PARAM">
+					<subreportParameterExpression><![CDATA[$F{CREDIT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.JREmptyDataSource(1)]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{sub}]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
 </jasperReport>

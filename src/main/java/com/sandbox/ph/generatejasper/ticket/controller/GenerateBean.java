@@ -7,19 +7,27 @@ import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import com.sandbox.ph.generatejasper.ticket.daoImpl.TicketDaoImpl;
-import jakarta.faces.view.ViewScoped;
-import net.sf.jasperreports.engine.*;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sandbox.ph.generatejasper.ticket.daoImpl.TicketDaoImpl;
+
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 @Named("generateBean")
@@ -71,6 +79,94 @@ public class GenerateBean implements Serializable {
         log.info(LOG_SEPARATOR_EQUALS);
 
         generateReport();
+    }
+
+    public void generateDdsoaPdf() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        reportGenerated = false;
+        pdfBytes = null;
+        pdfBase64 = null;
+
+        if (!isValidDdsoaFilters(context)) {
+            return;
+        }
+
+        try (InputStream mainStream = getClass().getResourceAsStream("/reports/main.jrxml");
+                InputStream subStream = getClass().getResourceAsStream("/reports/sub.jrxml")) {
+            if (mainStream == null || subStream == null) {
+                throw new IllegalStateException("DDSOA report templates were not found in /reports.");
+            }
+
+            JasperReport mainReport = JasperCompileManager.compileReport(mainStream);
+            JasperReport subReport = JasperCompileManager.compileReport(subStream);
+            List<com.sandbox.ph.generatejasper.ticket.dto.TicketDto> rows = ticketDao
+                    .findReportDataByDateAndTicketRange(fromDate, toDate, ticketNoFrom, ticketNoTo, orgaCode);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("frticket", ticketNoFrom.trim());
+            parameters.put("toticket", ticketNoTo.trim());
+            parameters.put("sub", subReport);
+            parameters.put("ftrndt", fromDate);
+            parameters.put("ttrndt", toDate);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(
+                    mainReport, parameters, new JRBeanCollectionDataSource(rows));
+            if (jasperPrint.getPages().isEmpty()) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                        "Warning", "No data found for the selected ticket range."));
+                return;
+            }
+
+            pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
+            pdfBase64 = Base64.getEncoder().encodeToString(pdfBytes);
+            reportGenerated = true;
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    "Success", "DDSOA report generated successfully."));
+        } catch (Exception e) {
+            log.error("Failed to generate DDSOA report", e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error", "Failed to generate DDSOA report: " + e.getMessage()));
+        }
+    }
+
+    private boolean isValidDdsoaFilters(FacesContext context) {
+        if (fromDate == null || toDate == null) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Required", "From Date and To Date are required."));
+            return false;
+        }
+
+        if (fromDate.after(toDate)) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Invalid Date Range", "From Date cannot be later than To Date."));
+            return false;
+        }
+
+        if (ticketNoFrom == null || ticketNoFrom.isBlank()
+                || ticketNoTo == null || ticketNoTo.isBlank()) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Required", "Ticket No. From and Ticket No. To are required."));
+            return false;
+        }
+
+        if (orgaCode == null || orgaCode.isBlank()) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Required", "Organization Unit Code is required."));
+            return false;
+        }
+
+        try {
+            if (Integer.parseInt(ticketNoFrom.trim()) > Integer.parseInt(ticketNoTo.trim())) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Invalid Range", "Ticket No. From cannot be greater than Ticket No. To."));
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Invalid Ticket Number", "Ticket numbers must contain digits only."));
+            return false;
+        }
+        return true;
     }
 
     // =========================================================
@@ -149,7 +245,8 @@ public class GenerateBean implements Serializable {
         }
         if (fromDate.after(toDate)) {
             log.warn("Validation failed: From Date is after To Date. fromDate = {}, toDate = {}", fromDate, toDate);
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Date Range", "From Date cannot be later than To Date."));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Date Range",
+                    "From Date cannot be later than To Date."));
             reportGenerated = false;
             return false;
         }
@@ -212,8 +309,7 @@ public class GenerateBean implements Serializable {
         long daoStartTime = System.currentTimeMillis();
 
         JasperPrint jasperPrint = ticketDao.generateBankSummaryReport(
-                jasperReport, parameters, fromDate, toDate, ticketNoFrom, ticketNoTo, orgaCode
-        );
+                jasperReport, parameters, fromDate, toDate, ticketNoFrom, ticketNoTo, orgaCode);
 
         log.info("DAO/Jasper execution time = {} ms", System.currentTimeMillis() - daoStartTime);
         return jasperPrint;
@@ -223,7 +319,8 @@ public class GenerateBean implements Serializable {
         if (jasperPrint == null) {
             log.warn("JasperPrint is NULL");
             reportGenerated = false;
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, MSG_WARNING, "No report was generated."));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, MSG_WARNING, "No report was generated."));
             return false;
         }
 
@@ -233,7 +330,8 @@ public class GenerateBean implements Serializable {
         if (pageCount == 0) {
             log.warn("JasperPrint contains ZERO pages");
             reportGenerated = false;
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, MSG_WARNING, "No data found for the selected filters."));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, MSG_WARNING,
+                    "No data found for the selected filters."));
             return false;
         }
 
@@ -256,13 +354,15 @@ public class GenerateBean implements Serializable {
             log.info("Base64 conversion time = {} ms", System.currentTimeMillis() - base64StartTime);
 
             this.reportGenerated = true;
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Report generated successfully."));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Report generated successfully."));
         } else {
             log.warn("PDF is NULL or EMPTY");
             this.pdfBytes = null;
             this.pdfBase64 = null;
             this.reportGenerated = false;
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, MSG_WARNING, "No data found for the selected filters."));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, MSG_WARNING,
+                    "No data found for the selected filters."));
         }
     }
 
@@ -280,7 +380,8 @@ public class GenerateBean implements Serializable {
             errorMessage = e.getClass().getSimpleName();
         }
 
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, MSG_ERROR, "Failed to generate report: " + errorMessage));
+        context.addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, MSG_ERROR, "Failed to generate report: " + errorMessage));
     }
 
     private void logExecutionSummary(long startTime) {

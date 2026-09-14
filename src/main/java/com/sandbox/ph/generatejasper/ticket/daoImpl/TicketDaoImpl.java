@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.sandbox.ph.generatejasper.ticket.dto.TicketDto;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -28,7 +29,8 @@ public class TicketDaoImpl {
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("db2PU");
     private static final String DATE_FORMAT_PATTERN = "yyyyMMdd";
 
-    public List<TicketDto> findReportDataByCriteria(Date fromDate, Date toDate, String ticketFrom, String ticketTo, String orga) {
+    public List<TicketDto> findReportDataByCriteria(Date fromDate, Date toDate, String ticketFrom, String ticketTo,
+            String orga) {
         Integer fDateNum = convertDateToInteger(fromDate);
         Integer tDateNum = convertDateToInteger(toDate);
         Integer fTicket = parseTicket(ticketFrom);
@@ -36,7 +38,7 @@ public class TicketDaoImpl {
 
         logInputFilters(fromDate, toDate, fDateNum, tDateNum, fTicket, tTicket, orga);
 
-        String sql = buildQuery();
+        String sql = buildQuery(true);
 
         List<Object[]> rawResults;
         try (EntityManager em = emf.createEntityManager()) {
@@ -51,12 +53,55 @@ public class TicketDaoImpl {
             rawResults = queryResult;
         }
 
-        LOGGER.info(() -> String.format("Query executed successfully. Total raw rows fetched: %d", (rawResults != null ? rawResults.size() : 0)));
+        LOGGER.info(() -> String.format("Query executed successfully. Total raw rows fetched: %d",
+                (rawResults != null ? rawResults.size() : 0)));
 
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_PATTERN);
         return rawResults.stream()
                 .map(row -> mapRowToDto(row, sdf))
                 .collect(Collectors.toList());
+    }
+
+    public List<TicketDto> findReportDataByTicketRange(String ticketFrom, String ticketTo) {
+        Integer fTicket = parseTicket(ticketFrom);
+        Integer tTicket = parseTicket(ticketTo);
+
+        try (EntityManager em = emf.createEntityManager()) {
+            @SuppressWarnings("unchecked")
+            List<Object[]> rawResults = em.createNativeQuery(buildQuery(false))
+                    .setParameter(1, fTicket)
+                    .setParameter(2, tTicket)
+                    .getResultList();
+
+            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+            return rawResults.stream()
+                    .map(row -> mapRowToDto(row, sdf))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public List<TicketDto> findReportDataByDateAndTicketRange(Date fromDate, Date toDate,
+            String ticketFrom, String ticketTo, String orgaCode) {
+        Integer fDateNum = convertDateToInteger(fromDate);
+        Integer tDateNum = convertDateToInteger(toDate);
+        Integer fTicket = parseTicket(ticketFrom);
+        Integer tTicket = parseTicket(ticketTo);
+
+        try (EntityManager em = emf.createEntityManager()) {
+            @SuppressWarnings("unchecked")
+            List<Object[]> rawResults = em.createNativeQuery(buildDateAndTicketQuery())
+                    .setParameter("fromDate", fDateNum)
+                    .setParameter("toDate", tDateNum)
+                    .setParameter("ticketFrom", fTicket)
+                    .setParameter("ticketTo", tTicket)
+                    .setParameter("orgaCode", orgaCode.trim())
+                    .getResultList();
+
+            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+            return rawResults.stream()
+                    .map(row -> mapRowToDto(row, sdf))
+                    .collect(Collectors.toList());
+        }
     }
 
     private Integer convertDateToInteger(Date date) {
@@ -68,7 +113,8 @@ public class TicketDaoImpl {
         return ticketStr != null ? Integer.parseInt(ticketStr.trim()) : 0;
     }
 
-    private void logInputFilters(Date fromDate, Date toDate, Integer fDateNum, Integer tDateNum, Integer fTicket, Integer tTicket, String orga) {
+    private void logInputFilters(Date fromDate, Date toDate, Integer fDateNum, Integer tDateNum, Integer fTicket,
+            Integer tTicket, String orga) {
         LOGGER.info("=== REPORT FILTER DEBUG ===");
         LOGGER.info(() -> String.format("From Date (Date): %s | Converted Integer: %d", fromDate, fDateNum));
         LOGGER.info(() -> String.format("To Date (Date): %s | Converted Integer: %d", toDate, tDateNum));
@@ -77,7 +123,7 @@ public class TicketDaoImpl {
         LOGGER.info(() -> String.format("Organization Unit Code (orga): %s", orga));
     }
 
-    private String buildQuery() {
+    private String buildQuery(boolean includeDateAndOrganization) {
         return "SELECT " +
                 "a.orgaunit AS RC_CODE, f.orgadesc AS RC_DESC, a.trtype AS TRANS_TYPE, " +
                 "d.trdesc AS TRANS_TYPE_DESC, a.trid AS TRANS_ID, e.triddesc AS TRANS_ID_DESC, " +
@@ -89,16 +135,47 @@ public class TicketDaoImpl {
                 "CASE WHEN TRIM(a.sign) = '-' THEN a.lcamt ELSE 0 END AS CREDIT, " +
                 "CAST(COALESCE(b1.part1, '') || COALESCE(b2.part2, '') AS VARCHAR(250)) AS PARTICULARS " +
                 "FROM CFASLIB.FA0210 a " +
-                "LEFT OUTER JOIN CFASLIB.FA0211LF1 b1 ON a.trdat = b1.trdat AND a.orgaunit = b1.orgaunit AND a.ticket = b1.ticket AND a.postdate = b1.postdate AND a.posttime = b1.posttime " +
-                "LEFT OUTER JOIN CFASLIB.FA0211LF2 b2 ON a.trdat = b2.trdat AND a.orgaunit = b2.orgaunit AND a.ticket = b2.ticket AND a.postdate = b2.postdate AND a.posttime = b2.posttime " +
+                "LEFT OUTER JOIN CFASLIB.FA0211LF1 b1 ON a.trdat = b1.trdat AND a.orgaunit = b1.orgaunit AND a.ticket = b1.ticket AND a.postdate = b1.postdate AND a.posttime = b1.posttime "
+                +
+                "LEFT OUTER JOIN CFASLIB.FA0211LF2 b2 ON a.trdat = b2.trdat AND a.orgaunit = b2.orgaunit AND a.ticket = b2.ticket AND a.postdate = b2.postdate AND a.posttime = b2.posttime "
+                +
                 "LEFT OUTER JOIN CFASLIB.FA0150 y1 ON a.analtype = y1.analtype AND a.analcode = y1.analcode " +
                 "LEFT OUTER JOIN CFASLIB.FA0720 b ON a.glcode = b.glcode " +
                 "LEFT OUTER JOIN CFASLIB.FA0710 d ON a.trtype = d.trtype " +
                 "LEFT OUTER JOIN CFASLIB.FA0630 e ON a.trid = e.trid AND e.trline = 0 " +
                 "LEFT OUTER JOIN CFASLIB.FA0740 f ON a.orgaunit = f.orgaunit " +
-                "WHERE a.trdat >= ?1 AND a.trdat <= ?2 " +
-                "AND a.ticket >= ?3 AND a.ticket <= ?4 " +
-                "AND a.orgaunit = ?5 " +
+                "WHERE " + (includeDateAndOrganization
+                        ? "a.trdat >= ?1 AND a.trdat <= ?2 AND a.ticket >= ?3 AND a.ticket <= ?4 AND a.orgaunit = ?5 "
+                        : "a.ticket >= ?1 AND a.ticket <= ?2 ")
+                +
+                "AND (a.tridtype BETWEEN '1' AND '9' OR a.tridtype IS NULL) " +
+                "ORDER BY a.postdate, a.posttime, a.trdat, a.ticket, a.sign, a.ticketseq";
+    }
+
+    private String buildDateAndTicketQuery() {
+        return "SELECT " +
+                "a.orgaunit AS RC_CODE, f.orgadesc AS RC_DESC, a.trtype AS TRANS_TYPE, " +
+                "d.trdesc AS TRANS_TYPE_DESC, a.trid AS TRANS_ID, e.triddesc AS TRANS_ID_DESC, " +
+                "a.ticket AS TICKET_NO, CAST(a.trdat AS VARCHAR(10)) AS TRANS_DATE, a.prousr AS PREPARED_BY, " +
+                "'' AS REVIEWED_BY, '' AS APPROVED_BY, a.glcode AS GL_ACCOUNT_CODE, " +
+                "b.gldesc AS GL_ACCOUNT_DESCRIPTION, a.analcode AS ANALYSIS_CODE, " +
+                "y1.anadesc AS ANALYSIS_DESCRIPTION, " +
+                "CASE WHEN TRIM(a.sign) = '+' THEN a.lcamt ELSE 0 END AS DEBIT, " +
+                "CASE WHEN TRIM(a.sign) = '-' THEN a.lcamt ELSE 0 END AS CREDIT, " +
+                "CAST(COALESCE(b1.part1, '') || COALESCE(b2.part2, '') AS VARCHAR(250)) AS PARTICULARS " +
+                "FROM CFASLIB.FA0210 a " +
+                "LEFT OUTER JOIN CFASLIB.FA0211LF1 b1 ON a.trdat = b1.trdat AND a.orgaunit = b1.orgaunit AND a.ticket = b1.ticket AND a.postdate = b1.postdate AND a.posttime = b1.posttime "
+                +
+                "LEFT OUTER JOIN CFASLIB.FA0211LF2 b2 ON a.trdat = b2.trdat AND a.orgaunit = b2.orgaunit AND a.ticket = b2.ticket AND a.postdate = b2.postdate AND a.posttime = b2.posttime "
+                +
+                "LEFT OUTER JOIN CFASLIB.FA0150 y1 ON a.analtype = y1.analtype AND a.analcode = y1.analcode " +
+                "LEFT OUTER JOIN CFASLIB.FA0720 b ON a.glcode = b.glcode " +
+                "LEFT OUTER JOIN CFASLIB.FA0710 d ON a.trtype = d.trtype " +
+                "LEFT OUTER JOIN CFASLIB.FA0630 e ON a.trid = e.trid AND e.trline = 0 " +
+                "LEFT OUTER JOIN CFASLIB.FA0740 f ON a.orgaunit = f.orgaunit " +
+                "WHERE a.trdat >= :fromDate AND a.trdat <= :toDate " +
+                "AND a.ticket >= :ticketFrom AND a.ticket <= :ticketTo " +
+                "AND a.orgaunit = :orgaCode " +
                 "AND (a.tridtype BETWEEN '1' AND '9' OR a.tridtype IS NULL) " +
                 "ORDER BY a.postdate, a.posttime, a.trdat, a.ticket, a.sign, a.ticketseq";
     }
@@ -149,15 +226,16 @@ public class TicketDaoImpl {
     }
 
     public JasperPrint generateBankSummaryReport(JasperReport jasperReport,
-                                                 Map<String, Object> parameters,
-                                                 Date fromDate,
-                                                 Date toDate,
-                                                 String ticketFrom,
-                                                 String ticketTo,
-                                                 String orga) throws JRException {
+            Map<String, Object> parameters,
+            Date fromDate,
+            Date toDate,
+            String ticketFrom,
+            String ticketTo,
+            String orga) throws JRException {
 
         List<TicketDto> transactionList = findReportDataByCriteria(fromDate, toDate, ticketFrom, ticketTo, orga);
-        LOGGER.info(() -> String.format("Passing %d records to JasperFillManager.", (transactionList != null ? transactionList.size() : 0)));
+        LOGGER.info(() -> String.format("Passing %d records to JasperFillManager.",
+                (transactionList != null ? transactionList.size() : 0)));
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(transactionList);
 
         Map<String, Object> safeParameters = (parameters != null) ? parameters : new HashMap<>();
@@ -166,7 +244,7 @@ public class TicketDaoImpl {
     }
 
     public JasperPrint generateBankSummaryReport(InputStream reportTemplateStream, Map<String, Object> parameters,
-                                                 Date fromDate, Date toDate, String ticketFrom, String ticketTo, String orga) throws JRException {
+            Date fromDate, Date toDate, String ticketFrom, String ticketTo, String orga) throws JRException {
 
         JasperReport jasperReport = JasperCompileManager.compileReport(reportTemplateStream);
         return generateBankSummaryReport(jasperReport, parameters, fromDate, toDate, ticketFrom, ticketTo, orga);

@@ -1,0 +1,36 @@
+#containerOne {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+#transactionTypeContainer,
+#dateContainer,
+#particularsContainer,
+#glContainer,
+#analysisCodeContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.totalOutputLabel {
+	margin-right: 5px;
+}
+
+.totalOutput {
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.particularsInput {
+    width: 400px;   /* Adjust as needed */
+}
+
+#submitButtonContainer,
+#addButtonContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}

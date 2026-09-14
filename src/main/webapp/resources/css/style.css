@@ -1,0 +1,40 @@
+/*replacing the template background color for ALL sidebar-dark- class*/
+[class*="sidebar-dark-"] {
+	background-color: #1f4b6e !important;
+}
+
+.contentbox {
+	background-position: 100% 5%;
+	background-repeat: no-repeat;
+	background-image: url('#{resource["images/pagebackground.png"]}');
+	background-color: #f4f6f9 !important;
+}
+
+.headerbox {
+	background-position: 100% 5%;
+	background-repeat: no-repeat;
+	background-image: url('#{resource["images/stars.png"]}');
+	background-size: contain !important;
+}
+
+.center {
+	text-align: center !important;
+}
+
+.right {
+	text-align: right !important;
+}
+
+.width100 {
+	width: 100% !important
+}
+
+#main-sidebar:hover .text-title {
+	display: inline-flex !important
+}
+
+.btn.disabled, .btn:disabled{
+  border: 1px solid #cccccc;
+  background-color: #cccccc;
+  color: #666666;
+}

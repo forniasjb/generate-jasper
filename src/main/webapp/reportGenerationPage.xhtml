@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+>
+    <h:head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+        />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
+
+        <h:outputStylesheet library="css" name="adminlte.min.css" />
+        <h:outputStylesheet library="css" name="style.css" />
+        <h:outputStylesheet library="css" name="customStyle.css" />
+
+        <style>
+            aside.main-sidebar,
+            .sidebar-dark-primary {
+                background-color: #1b2a47 !important;
+            }
+            .brand-link {
+                background-color: #152238 !important;
+                border-bottom: 1px solid #2c3e50 !important;
+                padding: 1rem 1.25rem;
+                display: block;
+                text-decoration: none;
+            }
+            .brand-text {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #ffffff !important;
+                margin-left: 0.5rem;
+            }
+            .sidebar .nav-sidebar .nav-item .nav-link {
+                color: #c2c7d0;
+                padding: 0.75rem 1rem;
+            }
+            .sidebar .nav-sidebar .nav-item .nav-link:hover,
+            .sidebar .nav-sidebar .nav-item .nav-link.active {
+                background-color: #2c3e50 !important;
+                color: #ffffff !important;
+            }
+        </style>
+
+        <title>DDA | Report Generation</title>
+    </h:head>
+
+    <h:body styleClass="hold-transition sidebar-mini layout-footer-fixed">
+        <div class="wrapper">
+            <!-- Sidebar Section -->
+            <aside
+                id="main-sidebar"
+                class="main-sidebar sidebar-dark-primary elevation-4"
+            >
+                <a
+                    href="#{request.contextPath}/reportGenerationPage.xhtml"
+                    class="brand-link"
+                >
+                    <span class="brand-text">Report Generation</span>
+                </a>
+                <div class="sidebar">
+                    <nav class="mt-3">
+                        <ul
+                            class="nav nav-pills nav-sidebar flex-column"
+                            data-widget="treeview"
+                            role="menu"
+                            data-accordion="false"
+                        >
+                            <li class="nav-item">
+                                <h:outputLink
+                                    value="#{request.contextPath}/reportGenerationPage.xhtml"
+                                    styleClass="nav-link active"
+                                >
+                                    <i
+                                        class="nav-icon pi pi-file-pdf"
+                                        style="
+                                            font-size: 1rem;
+                                            margin-right: 8px;
+                                        "
+                                    ></i>
+                                    <p style="display: inline; margin: 0">
+                                        Report Generation
+                                    </p>
+                                </h:outputLink>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content Area Wrapper -->
+            <div class="contentbox content-wrapper" id="contentbox">
+                <div
+                    style="
+                        width: 100%;
+                        background-color: #ffffff;
+                        min-height: calc(100vh - 57px);
+                        padding: 20px;
+                    "
+                >
+                    <div class="card shadow mb-4" style="padding: 20px">
+                        <h:form id="reportgenerationform">
+                            <p:messages
+                                id="message"
+                                showDetail="true"
+                                closable="true"
+                            >
+                                <p:autoUpdate />
+                            </p:messages>
+
+                            <p:panel header="Report Generation">
+                                <p:panelGrid
+                                    columns="12"
+                                    layout="grid"
+                                    styleClass="showcase-text-align-center"
+                                >
+                                    <p:column styleClass="col-2">
+                                        <div style="text-align: center">
+                                            <p:outputLabel
+                                                style="
+                                                    font-size: 14px;
+                                                    font-weight: normal;
+                                                    margin-top: 0.5rem;
+                                                "
+                                                >Report Type</p:outputLabel
+                                            >
+                                        </div>
+                                    </p:column>
+
+                                    <p:column styleClass="col-8">
+                                        <p:selectOneMenu
+                                            style="width: 100%"
+                                            id="option"
+                                            value="#{reportTypeSelection.reportType}"
+                                        >
+                                            <f:selectItem
+                                                itemLabel="Select One"
+                                                itemValue=""
+                                                noSelectionOption="true"
+                                            />
+                                            <f:selectItems
+                                                value="#{reportTypeSelection.reportTypes}"
+                                            />
+                                        </p:selectOneMenu>
+                                    </p:column>
+
+                                    <p:column styleClass="col-2">
+                                        <div style="text-align: center">
+                                            <p:commandButton
+                                                id="proceedBtn"
+                                                value="Proceed"
+                                                icon="pi pi-arrow-right"
+                                                iconPos="right"
+                                                styleClass="ui-button-primary w-full"
+                                                action="#{reportTypeSelection.handleProceed}"
+                                                process="@form"
+                                                update=":reportgenerationform:message"
+                                            />
+                                        </div>
+                                    </p:column>
+                                </p:panelGrid>
+                            </p:panel>
+
+                            <!-- 1. DTDTS Dialog -->
+                            <p:dialog
+                                header="Report Generation Filters"
+                                widgetVar="reportFilterDialog"
+                                modal="true"
+                                responsive="true"
+                                width="800"
+                                focus="closebtn"
+                            >
+                                <div
+                                    class="ui-g ui-fluid"
+                                    style="padding: 10px"
+                                >
+                                    <!-- Date From -->
+                                    <div class="ui-g-12 ui-md-6">
+                                        <div class="ui-g">
+                                            <div class="ui-g-4">
+                                                <p:outputLabel
+                                                    style="
+                                                        font-size: 14px;
+                                                        font-weight: normal;
+                                                        margin-top: 0.5rem;
+                                                    "
+                                                    >Date From:</p:outputLabel
+                                                >
+                                            </div>
+                                            <div class="ui-g-8">
+                                                <p:datePicker
+                                                    style="
+                                                        font-size: 14px;
+                                                        width: 100%;
+                                                    "
+                                                    id="dFrom"
+                                                    value="#{calendarUtils.txnStatFromDate}"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Date To -->
+                                    <div class="ui-g-12 ui-md-6">
+                                        <div class="ui-g">
+                                            <div class="ui-g-4">
+                                                <p:outputLabel
+                                                    style="
+                                                        font-size: 14px;
+                                                        font-weight: normal;
+                                                        margin-top: 0.5rem;
+                                                    "
+                                                    >Date To:</p:outputLabel
+                                                >
+                                            </div>
+                                            <div class="ui-g-8">
+                                                <p:datePicker
+                                                    style="
+                                                        font-size: 14px;
+                                                        width: 100%;
+                                                    "
+                                                    id="dTo"
+                                                    value="#{calendarUtils.txnStatToDate}"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Ticket No From -->
+                                    <div class="ui-g-12 ui-md-6">
+                                        <div class="ui-g">
+                                            <div class="ui-g-4">
+                                                <p:outputLabel
+                                                    style="
+                                                        font-size: 14px;
+                                                        font-weight: normal;
+                                                        margin-top: 0.5rem;
+                                                    "
+                                                    >Ticket No.
+                                                    From:</p:outputLabel
+                                                >
+                                            </div>
+                                            <div class="ui-g-8">
+                                                <p:inputText
+                                                    id="ticketNoFromDtdts"
+                                                    style="
+                                                        width: 100%;
+                                                        font-size: 14px;
+                                                    "
+                                                    value="#{reportTypeSelection.ticketNoFrom}"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Ticket No To -->
+                                    <div class="ui-g-12 ui-md-6">
+                                        <div class="ui-g">
+                                            <div class="ui-g-4">
+                                                <p:outputLabel
+                                                    style="
+                                                        font-size: 14px;
+                                                        font-weight: normal;
+                                                        margin-top: 0.5rem;
+                                                    "
+                                                    >Ticket No.
+                                                    To:</p:outputLabel
+                                                >
+                                            </div>
+                                            <div class="ui-g-8">
+                                                <p:inputText
+                                                    id="ticketNoToDtdts"
+                                                    style="
+                                                        width: 100%;
+                                                        font-size: 14px;
+                                                    "
+                                                    value="#{reportTypeSelection.ticketNoTo}"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <f:facet name="footer">
+                                    <p:commandButton
+                                        value="Submit"
+                                        styleClass="ui-button-success"
+                                        icon="pi pi-check"
+                                        style="margin-right: 10px"
+                                    />
+                                    <p:commandButton
+                                        id="closebtn"
+                                        value="Close"
+                                        onclick="
+                                            PF('reportFilterDialog').hide()
+                                        "
+                                        icon="pi pi-times"
+                                        styleClass="ui-button-secondary"
+                                        type="button"
+                                    />
+                                </f:facet>
+                            </p:dialog>
+
+                            <!-- 2. DDSOA Dialog -->
+                            <p:dialog
+                                id="ddsoaFilterDialog"
+                                header="DDSOA Report Filters"
+                                widgetVar="ddsoaFilterDialog"
+                                modal="true"
+                                responsive="true"
+                                width="800"
+                                focus="closeddsoabtn"
+                            >
+                                <div
+                                    class="ui-g ui-fluid"
+                                    style="padding: 10px"
+                                >
+                                    <div class="ui-g-12 ui-md-6">
+                                        <div class="ui-g">
+                                            <div class="ui-g-4">
+                                                <p:outputLabel
+                                                    >Date From:</p:outputLabel
+                                                >
+                                            </div>
+                                            <div class="ui-g-8">
+                                                <p:datePicker
+                                                    id="ddsoaFromDate"
+                                                    value="#{generateBean.fromDate}"
+                                                    pattern="MM/dd/yyyy"
+                                                    showIcon="true"
+                                                    style="width: 100%"
+                                                >
+                                                    <f:convertDateTime
+                                                        pattern="MM/dd/yyyy"
+                                                    />
+                                                </p:datePicker>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="ui-g-12 ui-md-6">
+                                        <div class="ui-g">
+                                            <div class="ui-g-4">
+                                                <p:outputLabel
+                                                    >Date To:</p:outputLabel
+                                                >
+                                            </div>
+                                            <div class="ui-g-8">
+                                                <p:datePicker
+                                                    id="ddsoaToDate"
+                                                    value="#{generateBean.toDate}"
+                                                    pattern="MM/dd/yyyy"
+                                                    showIcon="true"
+                                                    style="width: 100%"
+                                                >
+                                                    <f:convertDateTime
+                                                        pattern="MM/dd/yyyy"
+                                                    />
+                                                </p:datePicker>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Account No From -->
+                                    <div class="ui-g-12 ui-md-6">
+                                        <div class="ui-g">
+                                            <div class="ui-g-4">
+                                                <p:outputLabel
+                                                    style="
+                                                        font-size: 14px;
+                                                        font-weight: normal;
+                                                        margin-top: 0.5rem;
+                                                    "
+                                                    >Ticket No. From
+                                                    :</p:outputLabel
+                                                >
+                                            </div>
+                                            <div class="ui-g-8">
+                                                <p:inputText
+                                                    id="ticketNoFromDdsoa"
+                                                    style="
+                                                        width: 100%;
+                                                        font-size: 14px;
+                                                    "
+                                                    value="#{generateBean.ticketNoFrom}"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Account No To -->
+                                    <div class="ui-g-12 ui-md-6">
+                                        <div class="ui-g">
+                                            <div class="ui-g-4">
+                                                <p:outputLabel
+                                                    style="
+                                                        font-size: 14px;
+                                                        font-weight: normal;
+                                                        margin-top: 0.5rem;
+                                                    "
+                                                    >Ticket No. To
+                                                    :</p:outputLabel
+                                                >
+                                            </div>
+                                            <div class="ui-g-8">
+                                                <p:inputText
+                                                    id="ticketNoToDdsoa"
+                                                    style="
+                                                        width: 100%;
+                                                        font-size: 14px;
+                                                    "
+                                                    value="#{generateBean.ticketNoTo}"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="ui-g-12 ui-md-6">
+                                        <div class="ui-g">
+                                            <div class="ui-g-4">
+                                                <p:outputLabel
+                                                    >Organization Unit
+                                                    Code:</p:outputLabel
+                                                >
+                                            </div>
+                                            <div class="ui-g-8">
+                                                <p:inputText
+                                                    id="ddsoaOrgaCode"
+                                                    value="#{generateBean.orgaCode}"
+                                                    style="width: 100%"
+                                                    maxlength="3"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <f:facet name="footer">
+                                    <p:commandButton
+                                        value="Submit"
+                                        icon="pi pi-check"
+                                        styleClass="ui-button-success"
+                                        action="#{generateBean.generateDdsoaPdf}"
+                                        process="@form"
+                                        update=":reportgenerationform:message :reportgenerationform:ddsoaReportPreview"
+                                    />
+                                    <p:commandButton
+                                        id="closeddsoabtn"
+                                        value="Close"
+                                        icon="pi pi-times"
+                                        type="button"
+                                        onclick="PF('ddsoaFilterDialog').hide()"
+                                        styleClass="ui-button-secondary"
+                                    />
+                                </f:facet>
+                            </p:dialog>
+
+                            <p:outputPanel
+                                id="ddsoaReportPreview"
+                                style="display: block; margin-top: 20px"
+                            >
+                                <h:panelGroup
+                                    rendered="#{generateBean.reportGenerated}"
+                                >
+                                    <object
+                                        data="data:application/pdf;base64,#{generateBean.pdfBase64}"
+                                        type="application/pdf"
+                                        width="100%"
+                                        height="700px"
+                                    >
+                                        Your browser cannot display this PDF.
+                                    </object>
+                                </h:panelGroup>
+                            </p:outputPanel>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Scripts -->
+        <script src="#{resource['js/adminlte.min.js']}" nonce="DDA"></script>
+        <script src="#{resource['js/settings.js']}" nonce="DDA"></script>
+        <script
+            src="#{resource['js/bootstrap/bootstrap.bundle.min.js']}"
+            nonce="DDA"
+        ></script>
+    </h:body>
+</html>

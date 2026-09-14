@@ -3,6 +3,12 @@
 	<property name="ireport.zoom" value="1.3310000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="GL_ACCOUNT_CODE_PARAM" class="java.lang.String"/>
+	<parameter name="GL_ACCOUNT_DESCRIPTION_PARAM" class="java.lang.String"/>
+	<parameter name="ANALYSIS_CODE_PARAM" class="java.lang.String"/>
+	<parameter name="ANALYSIS_DESCRIPTION_PARAM" class="java.lang.String"/>
+	<parameter name="DEBIT_PARAM" class="java.math.BigDecimal"/>
+	<parameter name="CREDIT_PARAM" class="java.math.BigDecimal"/>
 	<field name="GL_ACCOUNT_CODE" class="java.lang.String"/>
 	<field name="GL_ACCOUNT_DESCRIPTION" class="java.lang.String"/>
 	<field name="ANALYSIS_CODE" class="java.lang.String"/>
@@ -13,29 +19,29 @@
 		<band height="36" splitType="Stretch">
 			<textField isBlankWhenNull="true">
 				<reportElement x="12" y="0" width="100" height="15" uuid="7f84a216-7186-4e7d-8b81-398d10fd0fe9"/>
-				<textFieldExpression><![CDATA[$F{GL_ACCOUNT_CODE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{GL_ACCOUNT_CODE_PARAM}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="12" y="15" width="100" height="15" uuid="56ff47e7-b560-40a9-bd0e-1c23da433744"/>
-				<textFieldExpression><![CDATA[$F{ANALYSIS_CODE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{ANALYSIS_CODE_PARAM}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="127" y="0" width="300" height="15" uuid="0f76606e-bc7e-4a2d-becf-56e73f16cac6"/>
-				<textFieldExpression><![CDATA[$F{GL_ACCOUNT_DESCRIPTION}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{GL_ACCOUNT_DESCRIPTION_PARAM}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="127" y="15" width="300" height="15" uuid="8fe7778a-12c9-4c22-bcd5-222f4d33cd3f"/>
-				<textFieldExpression><![CDATA[$F{ANALYSIS_DESCRIPTION}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{ANALYSIS_DESCRIPTION_PARAM}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="445" y="5" width="125" height="15" uuid="bac729be-fbed-4d62-a006-961ea523b73f"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{DEBIT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{DEBIT_PARAM}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="630" y="5" width="100" height="15" uuid="ceb1e3fb-6bc1-4a55-bf88-6811e1134822"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{CREDIT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{CREDIT_PARAM}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="0" y="32" width="802" height="1" uuid="41b65b05-05ad-4423-b42e-97788890c721"/>
