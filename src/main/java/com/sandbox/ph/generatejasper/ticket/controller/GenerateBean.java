@@ -91,14 +91,21 @@ public class GenerateBean implements Serializable {
             return;
         }
 
-        try (InputStream mainStream = getClass().getResourceAsStream("/reports/main.jrxml");
-                InputStream subStream = getClass().getResourceAsStream("/reports/sub.jrxml")) {
-            if (mainStream == null || subStream == null) {
-                throw new IllegalStateException("DDSOA report templates were not found in /reports.");
+        // Test templates. Revert to the commented production paths when testing is
+        // complete.
+        try (InputStream mainStream = getClass().getResourceAsStream("/reports/main2.jrxml");
+                InputStream subStream = getClass().getResourceAsStream("/reports/sub2.jrxml");
+                InputStream sub3Stream = getClass().getResourceAsStream("/reports/sub3.jrxml")) {
+            // Production paths:
+            // /reports/main.jrxml
+            // /reports/sub.jrxml
+            if (mainStream == null || subStream == null || sub3Stream == null) {
+                throw new IllegalStateException("DDSOA test report templates were not found in /reports.");
             }
 
             JasperReport mainReport = JasperCompileManager.compileReport(mainStream);
             JasperReport subReport = JasperCompileManager.compileReport(subStream);
+            JasperReport sub3Report = JasperCompileManager.compileReport(sub3Stream);
             List<com.sandbox.ph.generatejasper.ticket.dto.TicketDto> rows = ticketDao
                     .findReportDataByDateAndTicketRange(fromDate, toDate, ticketNoFrom, ticketNoTo, orgaCode);
 
@@ -106,6 +113,7 @@ public class GenerateBean implements Serializable {
             parameters.put("frticket", ticketNoFrom.trim());
             parameters.put("toticket", ticketNoTo.trim());
             parameters.put("sub", subReport);
+            parameters.put("sub3", sub3Report);
             parameters.put("ftrndt", fromDate);
             parameters.put("ttrndt", toDate);
 
