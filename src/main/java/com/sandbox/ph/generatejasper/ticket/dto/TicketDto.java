@@ -172,25 +172,78 @@ public class TicketDto {
     }
 
     // =========================================================
-    // Uppercase Getters (Para sa JasperReports .jrxml fields)
+    // Uppercase Getters (JasperReports .jrxml fields)
     // =========================================================
 
-    public String getRC_CODE() { return rcCode; }
-    public String getRC_DESC() { return rcDesc; }
-    public String getTRANS_TYPE() { return transType; }
-    public String getTRANS_TYPE_DESC() { return transTypeDesc; }
-    public String getTRANS_ID() { return transId; }
-    public String getTRANS_ID_DESC() { return transIdDesc; }
-    public String getTICKET_NO() { return ticketNo; }
-    public Date getTRANS_DATE() { return transDate; }
-    public String getPREPARED_BY() { return preparedBy; }
-    public String getREVIEWED_BY() { return reviewedBy; }
-    public String getAPPROVED_BY() { return approvedBy; }
-    public String getGL_ACCOUNT_CODE() { return glAccountCode; }
-    public String getGL_ACCOUNT_DESCRIPTION() { return glAccountDescription; }
-    public String getANALYSIS_CODE() { return analysisCode; }
-    public String getANALYSIS_DESCRIPTION() { return analysisDescription; }
-    public BigDecimal getDEBIT() { return debit; }
-    public BigDecimal getCREDIT() { return credit; }
-    public String getPARTICULARS() { return particulars; }
+    public String getRC_CODE() {
+        return rcCode;
+    }
+
+    public String getRC_DESC() {
+        return rcDesc;
+    }
+
+    public String getTRANS_TYPE() {
+        return transType;
+    }
+
+    public String getTRANS_TYPE_DESC() {
+        return transTypeDesc;
+    }
+
+    public String getTRANS_ID() {
+        return transId;
+    }
+
+    public String getTRANS_ID_DESC() {
+        return transIdDesc;
+    }
+
+    public String getTICKET_NO() {
+        return ticketNo;
+    }
+
+    public Date getTRANS_DATE() {
+        return transDate;
+    }
+
+    public String getPREPARED_BY() {
+        return preparedBy;
+    }
+
+    public String getREVIEWED_BY() {
+        return reviewedBy;
+    }
+
+    public String getAPPROVED_BY() {
+        return approvedBy;
+    }
+
+    public String getGL_ACCOUNT_CODE() {
+        return glAccountCode;
+    }
+
+    public String getGL_ACCOUNT_DESCRIPTION() {
+        return glAccountDescription;
+    }
+
+    public String getANALYSIS_CODE() {
+        return analysisCode;
+    }
+
+    public String getANALYSIS_DESCRIPTION() {
+        return analysisDescription;
+    }
+
+    public BigDecimal getDEBIT() {
+        return debit;
+    }
+
+    public BigDecimal getCREDIT() {
+        return credit;
+    }
+
+    public String getPARTICULARS() {
+        return particulars;
+    }
 }

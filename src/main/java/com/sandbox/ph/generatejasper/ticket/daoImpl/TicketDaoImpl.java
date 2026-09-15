@@ -149,7 +149,7 @@ public class TicketDaoImpl {
                         : "a.ticket >= ?1 AND a.ticket <= ?2 ")
                 +
                 "AND (a.tridtype BETWEEN '1' AND '9' OR a.tridtype IS NULL) " +
-                "ORDER BY a.postdate, a.posttime, a.trdat, a.ticket, a.sign, a.ticketseq";
+                "ORDER BY a.ticket, a.postdate, a.posttime, a.trdat, a.sign, a.ticketseq";
     }
 
     private String buildDateAndTicketQuery() {
@@ -177,7 +177,7 @@ public class TicketDaoImpl {
                 "AND a.ticket >= :ticketFrom AND a.ticket <= :ticketTo " +
                 "AND a.orgaunit = :orgaCode " +
                 "AND (a.tridtype BETWEEN '1' AND '9' OR a.tridtype IS NULL) " +
-                "ORDER BY a.postdate, a.posttime, a.trdat, a.ticket, a.sign, a.ticketseq";
+                "ORDER BY a.ticket, a.postdate, a.posttime, a.trdat, a.sign, a.ticketseq";
     }
 
     private TicketDto mapRowToDto(Object[] row, SimpleDateFormat sdf) {

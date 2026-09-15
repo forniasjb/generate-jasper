@@ -322,7 +322,7 @@ does not require a signature.]]></text>
 		</band>
 	</title>
 	<detail>
-		<band height="81" splitType="Stretch">
+		<band height="45" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="0" width="802" height="45" uuid="e4827101-9871-4192-b102-123456789abc"/>
 				<subreportParameter name="GL_ACCOUNT_CODE_PARAM">
@@ -345,29 +345,6 @@ does not require a signature.]]></text>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.JREmptyDataSource(1)]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{sub}]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="0" y="36" width="802" height="45" uuid="ccb45461-5783-4205-b16e-5c0c770970f6"/>
-				<subreportParameter name="GL_ACCOUNT_CODE_PARAM">
-					<subreportParameterExpression><![CDATA[$F{GL_ACCOUNT_CODE}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="GL_ACCOUNT_DESCRIPTION_PARAM">
-					<subreportParameterExpression><![CDATA[$F{GL_ACCOUNT_DESCRIPTION}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="ANALYSIS_CODE_PARAM">
-					<subreportParameterExpression><![CDATA[$F{ANALYSIS_CODE}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="ANALYSIS_DESCRIPTION_PARAM">
-					<subreportParameterExpression><![CDATA[$F{ANALYSIS_DESCRIPTION}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="DEBIT_PARAM">
-					<subreportParameterExpression><![CDATA[$F{DEBIT}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="CREDIT_PARAM">
-					<subreportParameterExpression><![CDATA[$F{CREDIT}]]></subreportParameterExpression>
-				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.JREmptyDataSource(1)]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{sub3}]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
