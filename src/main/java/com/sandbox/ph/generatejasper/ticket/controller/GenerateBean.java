@@ -70,7 +70,7 @@ public class GenerateBean implements Serializable {
     }
 
     // =========================================================
-    // Generate PDF
+    // Generate PDF (Core / Default)
     // =========================================================
 
     public void generatePdf() {
@@ -80,6 +80,10 @@ public class GenerateBean implements Serializable {
 
         generateReport();
     }
+
+    // =========================================================
+    // DDSOA Report Generation Function
+    // =========================================================
 
     public void generateDdsoaPdf() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -91,21 +95,18 @@ public class GenerateBean implements Serializable {
             return;
         }
 
-        // Test templates. Revert to the commented production paths when testing is
-        // complete.
         try (InputStream mainStream = getClass().getResourceAsStream("/reports/main2.jrxml");
                 InputStream subStream = getClass().getResourceAsStream("/reports/sub2.jrxml");
                 InputStream sub3Stream = getClass().getResourceAsStream("/reports/sub3.jrxml")) {
-            // Production paths:
-            // /reports/main.jrxml
-            // /reports/sub.jrxml
+
             if (mainStream == null || subStream == null || sub3Stream == null) {
-                throw new IllegalStateException("DDSOA test report templates were not found in /reports.");
+                throw new IllegalStateException("DDSOA report templates were not found in /reports.");
             }
 
             JasperReport mainReport = JasperCompileManager.compileReport(mainStream);
             JasperReport subReport = JasperCompileManager.compileReport(subStream);
             JasperReport sub3Report = JasperCompileManager.compileReport(sub3Stream);
+
             List<com.sandbox.ph.generatejasper.ticket.dto.TicketDto> rows = ticketDao
                     .findReportDataByDateAndTicketRange(fromDate, toDate, ticketNoFrom, ticketNoTo, orgaCode);
 
@@ -116,12 +117,14 @@ public class GenerateBean implements Serializable {
             parameters.put("sub3", sub3Report);
             parameters.put("ftrndt", fromDate);
             parameters.put("ttrndt", toDate);
+            parameters.put("orga", orgaCode);
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(
                     mainReport, parameters, new JRBeanCollectionDataSource(rows));
+
             if (jasperPrint.getPages().isEmpty()) {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
-                        "Warning", "No data found for the selected ticket range."));
+                        MSG_WARNING, "No data found for the selected DDSOA ticket range."));
                 return;
             }
 
@@ -133,14 +136,14 @@ public class GenerateBean implements Serializable {
         } catch (Exception e) {
             log.error("Failed to generate DDSOA report", e);
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Error", "Failed to generate DDSOA report: " + e.getMessage()));
+                    MSG_ERROR, "Failed to generate DDSOA report: " + e.getMessage()));
         }
     }
 
     private boolean isValidDdsoaFilters(FacesContext context) {
         if (fromDate == null || toDate == null) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Required", "From Date and To Date are required."));
+                    MSG_REQUIRED, "From Date and To Date are required."));
             return false;
         }
 
@@ -153,13 +156,13 @@ public class GenerateBean implements Serializable {
         if (ticketNoFrom == null || ticketNoFrom.isBlank()
                 || ticketNoTo == null || ticketNoTo.isBlank()) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Required", "Ticket No. From and Ticket No. To are required."));
+                    MSG_REQUIRED, "Ticket No. From and Ticket No. To are required."));
             return false;
         }
 
         if (orgaCode == null || orgaCode.isBlank()) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Required", "Organization Unit Code is required."));
+                    MSG_REQUIRED, "Organization Unit Code is required."));
             return false;
         }
 
@@ -178,7 +181,100 @@ public class GenerateBean implements Serializable {
     }
 
     // =========================================================
-    // Generate Report
+    // DTDTS Report Generation Function (New Separate Logic)
+    // =========================================================
+
+    public void generateDtdtsPdf() {
+        long startTime = System.currentTimeMillis();
+
+        log.info(LOG_SEPARATOR_DASH);
+        log.info("START generateDtdtsPdf()");
+        log.info(LOG_SEPARATOR_DASH);
+
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context == null) {
+            log.error("FacesContext is NULL. Cannot generate DTDTS report.");
+            return;
+        }
+
+        reportGenerated = false;
+        pdfBytes = null;
+        pdfBase64 = null;
+
+        if (!isValidDtdtsFilters(context)) {
+            return;
+        }
+
+        try {
+            // Load DTDTS Template (Update path if using a compiled .jasper or separate
+            // .jrxml file)
+            InputStream mainStream = getClass().getResourceAsStream("/reports/DTDTS.jrxml");
+            if (mainStream == null) {
+                throw new IllegalStateException("DTDTS report template not found in /reports/.");
+            }
+
+            JasperReport dtdtsReport = JasperCompileManager.compileReport(mainStream);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("ftrndt", fromDate);
+            parameters.put("ttrndt", toDate);
+            parameters.put("frticket", ticketNoFrom.trim());
+            parameters.put("toticket", ticketNoTo.trim());
+            parameters.put("orga", orgaCode);
+
+            List<com.sandbox.ph.generatejasper.ticket.dto.TicketDto> rows = ticketDao
+                    .findReportDataByDateAndTicketRange(fromDate, toDate, ticketNoFrom, ticketNoTo, orgaCode);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(
+                    dtdtsReport, parameters, new JRBeanCollectionDataSource(rows));
+
+            if (jasperPrint.getPages().isEmpty()) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                        MSG_WARNING, "No data found for the selected DTDTS filter range."));
+                return;
+            }
+
+            pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
+            pdfBase64 = Base64.getEncoder().encodeToString(pdfBytes);
+            reportGenerated = true;
+
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    "Success", "DTDTS report generated successfully."));
+
+        } catch (Exception e) {
+            log.error("Failed to generate DTDTS report", e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    MSG_ERROR, "Failed to generate DTDTS report: " + e.getMessage()));
+        } finally {
+            log.info("generateDtdtsPdf() TOTAL execution time = {} ms", System.currentTimeMillis() - startTime);
+            log.info(LOG_SEPARATOR_DASH);
+        }
+    }
+
+    private boolean isValidDtdtsFilters(FacesContext context) {
+        if (fromDate == null || toDate == null) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    MSG_REQUIRED, "From Date and To Date are required for DTDTS."));
+            return false;
+        }
+
+        if (fromDate.after(toDate)) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Invalid Date Range", "From Date cannot be later than To Date."));
+            return false;
+        }
+
+        if (ticketNoFrom == null || ticketNoFrom.isBlank() || ticketNoTo == null || ticketNoTo.isBlank()) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    MSG_REQUIRED, "Ticket Range is required for DTDTS."));
+            return false;
+        }
+
+        return true;
+    }
+
+    // =========================================================
+    // Generate Report (Core Bank Summary Workflow)
     // =========================================================
 
     public void generateReport() {
