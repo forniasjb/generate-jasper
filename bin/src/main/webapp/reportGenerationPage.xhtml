@@ -185,8 +185,8 @@
                             >
                                 <f:facet name="header">
                                     <span class="dialog-title-accent">
-                                        DTDTS Report Filters
-                                    </span>
+                                        Activity Reports</span
+                                    >
                                 </f:facet>
 
                                 <p:panelGrid
@@ -195,9 +195,8 @@
                                     styleClass="ui-panelgrid-blank ui-fluid"
                                     style="padding: 10px"
                                 >
-                                    <!-- Date From -->
                                     <p:outputLabel
-                                        for="dtdtsFrom"
+                                        for="dFrom"
                                         value="Date From:"
                                         style="
                                             font-size: 14px;
@@ -205,10 +204,9 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-
                                     <p:datePicker
-                                        id="dtdtsFrom"
-                                        value="#{generateBeanDTDTS.fromDate}"
+                                        id="dFrom"
+                                        value="#{calendarUtils.txnStatFromDate}"
                                         pattern="MM/dd/yyyy"
                                         showIcon="true"
                                         style="width: 100%"
@@ -218,9 +216,8 @@
                                         />
                                     </p:datePicker>
 
-                                    <!-- Date To -->
                                     <p:outputLabel
-                                        for="dtdtsTo"
+                                        for="dTo"
                                         value="Date To:"
                                         style="
                                             font-size: 14px;
@@ -228,10 +225,9 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-
                                     <p:datePicker
-                                        id="dtdtsTo"
-                                        value="#{generateBeanDTDTS.toDate}"
+                                        id="dTo"
+                                        value="#{calendarUtils.txnStatToDate}"
                                         pattern="MM/dd/yyyy"
                                         showIcon="true"
                                         style="width: 100%"
@@ -241,7 +237,6 @@
                                         />
                                     </p:datePicker>
 
-                                    <!-- Ticket From -->
                                     <p:outputLabel
                                         for="ticketNoFromDtdts"
                                         value="Ticket No. From:"
@@ -251,14 +246,12 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-
                                     <p:inputText
                                         id="ticketNoFromDtdts"
-                                        value="#{generateBeanDTDTS.ticketNoFrom}"
+                                        value="#{reportTypeSelection.ticketNoFrom}"
                                         style="width: 100%; font-size: 14px"
                                     />
 
-                                    <!-- Ticket To -->
                                     <p:outputLabel
                                         for="ticketNoToDtdts"
                                         value="Ticket No. To:"
@@ -268,54 +261,62 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-
                                     <p:inputText
                                         id="ticketNoToDtdts"
-                                        value="#{generateBeanDTDTS.ticketNoTo}"
+                                        value="#{reportTypeSelection.ticketNoTo}"
                                         style="width: 100%; font-size: 14px"
                                     />
 
-                                    <!-- Organization Code -->
                                     <p:outputLabel
-                                        for="orgaCodeDtdts"
-                                        value="Org Code:"
+                                        for="accountNoFromDtdts"
+                                        value="Account No. From:"
                                         style="
                                             font-size: 14px;
                                             font-weight: normal;
                                             margin-top: 0.5rem;
                                         "
                                     />
-
                                     <p:inputText
-                                        id="orgaCodeDtdts"
-                                        value="#{generateBeanDTDTS.orgaCode}"
-                                        maxlength="3"
+                                        id="accountNoFromDtdts"
+                                        value="#{reportTypeSelection.accountNoFrom}"
+                                        style="width: 100%; font-size: 14px"
+                                    />
+
+                                    <p:outputLabel
+                                        for="accountNoToDtdts"
+                                        value="Account No. To:"
+                                        style="
+                                            font-size: 14px;
+                                            font-weight: normal;
+                                            margin-top: 0.5rem;
+                                        "
+                                    />
+                                    <p:inputText
+                                        id="accountNoToDtdts"
+                                        value="#{reportTypeSelection.accountNoTo}"
                                         style="width: 100%; font-size: 14px"
                                     />
                                 </p:panelGrid>
 
                                 <f:facet name="footer">
-                                    <!-- SUBMIT DTDTS -->
                                     <p:commandButton
-                                        id="submitDtdts"
                                         value="Submit"
-                                        icon="pi pi-check"
                                         styleClass="ui-button-success"
-                                        action="#{generateBeanDTDTS.generatePdf}"
+                                        icon="pi pi-check"
+                                        style="margin-right: 10px"
+                                        action="#{generateBean.generateDtdtsPdf}"
                                         process="@form"
                                         update=":reportgenerationform:message :reportgenerationform:dtdtsReportPreview"
                                     />
-
-                                    <!-- CLOSE -->
                                     <p:commandButton
                                         id="closebtn"
                                         value="Close"
-                                        icon="pi pi-times"
-                                        type="button"
                                         onclick="
                                             PF('reportFilterDialog').hide()
                                         "
+                                        icon="pi pi-times"
                                         styleClass="ui-button-secondary"
+                                        type="button"
                                     />
                                 </f:facet>
                             </p:dialog>
@@ -460,10 +461,10 @@
                                 style="display: block; margin-top: 20px"
                             >
                                 <h:panelGroup
-                                    rendered="#{generateBeanDTDTS.reportGenerated}"
+                                    rendered="#{generateBean.reportGenerated}"
                                 >
                                     <object
-                                        data="data:application/pdf;base64,#{generateBeanDTDTS.pdfBase64}"
+                                        data="data:application/pdf;base64,#{generateBean.pdfBase64}"
                                         type="application/pdf"
                                         width="100%"
                                         height="600px"

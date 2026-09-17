@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ticketSub2" pageWidth="802" pageHeight="555" orientation="Landscape" columnWidth="802" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+    <parameter name="GL_ACCOUNT_CODE_PARAM" class="java.lang.String"/>
+    <parameter name="GL_ACCOUNT_DESCRIPTION_PARAM" class="java.lang.String"/>
+    <parameter name="ANALYSIS_CODE_PARAM" class="java.lang.String"/>
+    <parameter name="ANALYSIS_DESCRIPTION_PARAM" class="java.lang.String"/>
+    <parameter name="DEBIT_PARAM" class="java.math.BigDecimal"/>
+    <parameter name="CREDIT_PARAM" class="java.math.BigDecimal"/>
+    <detail>
+        <band height="36" splitType="Stretch">
+            <textField isBlankWhenNull="true"><reportElement x="12" y="0" width="100" height="15"/><textFieldExpression><![CDATA[$P{GL_ACCOUNT_CODE_PARAM}]]></textFieldExpression></textField>
+            <textField isBlankWhenNull="true"><reportElement x="12" y="15" width="100" height="15"/><textFieldExpression><![CDATA[$P{ANALYSIS_CODE_PARAM}]]></textFieldExpression></textField>
+            <textField isBlankWhenNull="true"><reportElement x="127" y="0" width="300" height="15"/><textFieldExpression><![CDATA[$P{GL_ACCOUNT_DESCRIPTION_PARAM}]]></textFieldExpression></textField>
+            <textField isBlankWhenNull="true"><reportElement x="127" y="15" width="300" height="15"/><textFieldExpression><![CDATA[$P{ANALYSIS_DESCRIPTION_PARAM}]]></textFieldExpression></textField>
+            <textField pattern="#,##0.00" isBlankWhenNull="true"><reportElement x="445" y="5" width="125" height="15"/><textElement textAlignment="Right"/><textFieldExpression><![CDATA[$P{DEBIT_PARAM}]]></textFieldExpression></textField>
+            <textField pattern="#,##0.00" isBlankWhenNull="true"><reportElement x="630" y="5" width="100" height="15"/><textElement textAlignment="Right"/><textFieldExpression><![CDATA[$P{CREDIT_PARAM}]]></textFieldExpression></textField>
+            <line><reportElement x="0" y="32" width="802" height="1"/></line>
+        </band>
+    </detail>
+</jasperReport>

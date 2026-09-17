@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+>
+<h:head>
+    <title>Ticket Report Filters</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333333;
+            margin: 0;
+            padding: 20px;
+        }
+        .main-container {
+            max-width: 1550px;
+            margin: 0 auto;
+        }
+        /* Card Containers */
+        .card-inline {
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: #ffffff;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-body {
+            padding: 1.5rem;
+            flex: 1;
+        }
+        .card-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            background-color: #fcfdfd;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="main-container">
+        <h:form id="reportFilterForm">
+            <p:growl id="growl" showDetail="true" showSummary="true" />
+
+            <!-- Side-by-Side Grid Layout -->
+            <div class="ui-g ui-fluid" style="align-items: stretch;">
+
+                <!-- Left Panel: Detail Form -->
+                <div class="ui-g-12 ui-lg-5">
+                    <div class="card-inline">
+                        <div class="card-title">
+                            <i class="pi pi-sliders-h" style="color: #3b82f6;"></i>
+                            Leftpanel Detail
+                        </div>
+
+                        <div class="card-body">
+                            <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+                                <!-- Date Range Row -->
+                                <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank" style="padding: 0px; margin-top: 5px">
+                                    <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+                                        <p:outputLabel for="fromDate" value="From Date" />
+                                        <p:datePicker
+                                                id="fromDate"
+                                                value="#{generateBean.fromDate}"
+                                                showIcon="true"
+                                                pattern="MM/dd/yyyy"
+                                                style="width: 100%"
+                                        >
+                                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                                        </p:datePicker>
+                                    </p:panelGrid>
+
+                                    <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+                                        <p:outputLabel for="toDate" value="To Date" />
+                                        <p:datePicker
+                                                id="toDate"
+                                                value="#{generateBean.toDate}"
+                                                showIcon="true"
+                                                pattern="MM/dd/yyyy"
+                                                style="width: 100%"
+                                        >
+                                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                                        </p:datePicker>
+                                    </p:panelGrid>
+                                </p:panelGrid>
+
+                                <!-- Ticket Range Row -->
+                                <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank" style="padding: 0px; margin-top: 15px">
+                                    <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+                                        <p:outputLabel for="ticketFrom" value="Ticket No. From" />
+                                        <p:inputText
+                                                id="ticketFrom"
+                                                value="#{generateBean.ticketNoFrom}"
+                                                style="width: 100%"
+                                        />
+                                    </p:panelGrid>
+
+                                    <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+                                        <p:outputLabel for="ticketTo" value="Ticket No. To" />
+                                        <p:inputText
+                                                id="ticketTo"
+                                                value="#{generateBean.ticketNoTo}"
+                                                style="width: 100%"
+                                        />
+                                    </p:panelGrid>
+                                </p:panelGrid>
+
+                                <!-- Organization Unit Row -->
+                                <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank" style="padding: 0px; margin-top: 15px">
+                                    <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+                                        <p:outputLabel for="orgaCode" value="Organization Unit Code" />
+                                        <p:inputText
+                                                id="orgaCode"
+                                                value="#{generateBean.orgaCode}"
+                                                style="width: 100%"
+                                        />
+                                    </p:panelGrid>
+                                </p:panelGrid>
+                            </p:panelGrid>
+                        </div>
+
+                        <div class="card-footer">
+                            <p:commandButton
+                                    value="Clear"
+                                    icon="pi pi-refresh"
+                                    styleClass="ui-button-flat ui-button-secondary"
+                                    update="@form"
+                                    action="#{generateBean.clearFilters}"
+                                    process="@this"
+                            />
+
+                            <p:commandButton
+                                    value="Generate PDF"
+                                    action="#{generateBean.generatePdf}"
+                                    update="@form"
+                                    icon="pi pi-file-pdf"
+                                    styleClass="ui-button-success"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Jasper Report Generating Preview -->
+                <div class="ui-g-12 ui-lg-7">
+                    <div class="card-inline">
+                        <div class="card-title">
+                            <i class="pi pi-file-pdf" style="color: #10b981;"></i>
+                            Right Panel Jasper Report Generating
+                        </div>
+
+                        <div class="card-body" style="display: flex; align-items: center; justify-content: center; min-height: 700px;">
+                            <!-- Placeholder kapag hindi pa nag-a-generate -->
+                            <h:panelGroup rendered="#{!generateBean.reportGenerated}" style="text-align: center; color: #6b7280;">
+                                <i class="pi pi-info-circle" style="font-size: 2.5rem; margin-bottom: 1rem; display: block; color: #9ca3af;"></i>
+                                <span style="font-size: 1rem;">Click "Generate PDF" to load and preview the Jasper report here.</span>
+                            </h:panelGroup>
+
+                            <!-- PDF Object kapag rendered na -->
+                            <h:panelGroup rendered="#{generateBean.reportGenerated}" style="width: 100%; height: 100%;">
+                                <object
+                                        data="data:application/pdf;base64,#{generateBean.pdfBase64}"
+                                        type="application/pdf"
+                                        width="100%"
+                                        height="700px"
+                                >
+                                    Your browser can't display this PDF.
+                                </object>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </h:form>
+    </div>
+</h:body>
+</html>

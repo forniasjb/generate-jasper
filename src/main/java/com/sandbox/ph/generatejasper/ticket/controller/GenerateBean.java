@@ -40,7 +40,7 @@ public class GenerateBean implements Serializable {
     private static final String MSG_REQUIRED = "Required";
     private static final String MSG_WARNING = "Warning";
     private static final String MSG_ERROR = "Error";
-    private static final String REPORT_PATH = "/reports/main.jasper";
+    private static final String REPORT_PATH = "/reports/main2.jasper";
     private transient TicketDaoImpl ticketDao = new TicketDaoImpl();
 
     // =========================================================
@@ -181,7 +181,7 @@ public class GenerateBean implements Serializable {
     }
 
     // =========================================================
-    // DTDTS Report Generation Function (New Separate Logic)
+    // DTDTS Report Generation Function
     // =========================================================
 
     public void generateDtdtsPdf() {
@@ -205,12 +205,12 @@ public class GenerateBean implements Serializable {
             return;
         }
 
-        try {
-            // Load DTDTS Template (Update path if using a compiled .jasper or separate
-            // .jrxml file)
-            InputStream mainStream = getClass().getResourceAsStream("/reports/DTDTS.jrxml");
+        try (InputStream mainStream = getClass().getResourceAsStream("/reports/main2.jrxml");
+                InputStream subStream = getClass().getResourceAsStream("/reports/sub2.jrxml");
+                InputStream sub3Stream = getClass().getResourceAsStream("/reports/sub3.jrxml")) {
+
             if (mainStream == null) {
-                throw new IllegalStateException("DTDTS report template not found in /reports/.");
+                throw new IllegalStateException("DTDTS report template not found in /reports/ (main2.jrxml).");
             }
 
             JasperReport dtdtsReport = JasperCompileManager.compileReport(mainStream);
@@ -221,6 +221,13 @@ public class GenerateBean implements Serializable {
             parameters.put("frticket", ticketNoFrom.trim());
             parameters.put("toticket", ticketNoTo.trim());
             parameters.put("orga", orgaCode);
+
+            if (subStream != null) {
+                parameters.put("sub", JasperCompileManager.compileReport(subStream));
+            }
+            if (sub3Stream != null) {
+                parameters.put("sub3", JasperCompileManager.compileReport(sub3Stream));
+            }
 
             List<com.sandbox.ph.generatejasper.ticket.dto.TicketDto> rows = ticketDao
                     .findReportDataByDateAndTicketRange(fromDate, toDate, ticketNoFrom, ticketNoTo, orgaCode);
@@ -270,6 +277,12 @@ public class GenerateBean implements Serializable {
             return false;
         }
 
+        if (orgaCode == null || orgaCode.isBlank()) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    MSG_REQUIRED, "Organization Unit Code is required for DTDTS."));
+            return false;
+        }
+
         return true;
     }
 
@@ -292,6 +305,10 @@ public class GenerateBean implements Serializable {
 
         log.info("FacesContext obtained successfully");
         logInputParameters();
+
+        log.info("FROM DATE: " + this.fromDate);
+        log.info("TO DATE: " + this.toDate);
+        log.info("ORG CODE: " + this.orgaCode);
 
         if (!validateInputs(context)) {
             return;

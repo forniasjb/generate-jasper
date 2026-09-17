@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class TicketDto {
+
     private String rcCode;
     private String rcDesc;
     private String transType;
@@ -22,6 +23,7 @@ public class TicketDto {
     private BigDecimal debit;
     private BigDecimal credit;
     private String particulars;
+    private String institutionName;
 
     // =========================================================
     // Standard Getters and Setters
@@ -171,6 +173,14 @@ public class TicketDto {
         this.particulars = particulars;
     }
 
+    public String getInstitutionName() {
+        return institutionName;
+    }
+
+    public void setInstitutionName(String institutionName) {
+        this.institutionName = institutionName;
+    }
+
     // =========================================================
     // Uppercase Getters (JasperReports .jrxml fields)
     // =========================================================
@@ -245,5 +255,9 @@ public class TicketDto {
 
     public String getPARTICULARS() {
         return particulars;
+    }
+
+    public String getINSTITUTION_NAME() {
+        return institutionName;
     }
 }

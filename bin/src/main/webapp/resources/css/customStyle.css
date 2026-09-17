@@ -1,0 +1,58 @@
+#containerOne {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+#transactionTypeContainer,
+#dateContainer,
+#particularsContainer,
+#glContainer,
+#analysisCodeContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.totalOutputLabel {
+    margin-right: 5px;
+}
+
+.totalOutput {
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.particularsInput {
+    width: 400px; /* Adjust as needed */
+}
+
+#submitButtonContainer,
+#addButtonContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.report-selection-grid .ui-panelgrid-cell {
+    flex: 0 0 auto;
+}
+
+.report-selection-grid .ui-panelgrid-cell:nth-child(1) {
+    width: 120px;
+}
+
+.report-selection-grid .ui-panelgrid-cell:nth-child(2) {
+    width: 560px;
+}
+
+.report-selection-grid .ui-panelgrid-cell:nth-child(3) {
+    width: 160px;
+}
+
+@media (max-width: 768px) {
+    .report-selection-grid .ui-panelgrid-cell {
+        width: 100% !important;
+    }
+}
