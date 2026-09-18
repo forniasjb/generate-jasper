@@ -542,7 +542,6 @@ public class GenerateBeanDTDTS implements Serializable {
 
             return false;
         }
-
         return true;
     }
 
@@ -552,20 +551,14 @@ public class GenerateBeanDTDTS implements Serializable {
 
     public void clearFilters() {
 
-        log.info(
-                "Clearing DTDTS filters...");
-
+        log.info("Clearing DTDTS filters...");
         fromDate = null;
         toDate = null;
-
         ticketNoFrom = null;
         ticketNoTo = null;
-
         orgaCode = null;
-
         pdfBytes = null;
         pdfBase64 = null;
-
         reportGenerated = false;
     }
 

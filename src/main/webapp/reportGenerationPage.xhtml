@@ -123,6 +123,15 @@
                     "
                 >
                     <div class="card shadow mb-4" style="padding: 20px">
+                        <p:growl
+                            id="growl"
+                            showSummary="true"
+                            showDetail="true"
+                            life="4000"
+                        >
+                            <p:autoUpdate />
+                        </p:growl>
+
                         <h:form id="reportgenerationform">
                             <p:messages
                                 id="message"
@@ -168,7 +177,7 @@
                                         styleClass="ui-button-primary w-full"
                                         action="#{reportTypeSelection.handleProceed}"
                                         process="@form"
-                                        update=":reportgenerationform:message"
+                                        update=":reportgenerationform:option"
                                     />
                                 </p:panelGrid>
                             </p:panel>
@@ -308,13 +317,12 @@
 
                                     <!-- CLOSE -->
                                     <p:commandButton
-                                        id="closebtn"
                                         value="Close"
                                         icon="pi pi-times"
-                                        type="button"
-                                        onclick="
-                                            PF('reportFilterDialog').hide()
-                                        "
+                                        action="#{generateBeanDTDTS.clearFilters}"
+                                        process="@this"
+                                        update="reportFilterDialog"
+                                        oncomplete="PF('reportFilterDialog').hide();"
                                         styleClass="ui-button-secondary"
                                     />
                                 </f:facet>
