@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Activity Report" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3088e72f-99cf-47b3-ab02-0b446186d664">
-	<property name="ireport.zoom" value="1.4641000000000028"/>
+	<property name="ireport.zoom" value="1.9487171000000045"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="fromDate" class="java.lang.Integer">
@@ -30,68 +30,41 @@
 	<queryString>
 		<![CDATA[SELECT
     CAST(a.ORGAUNIT AS VARCHAR(20)) AS RC_CODE,
-
-    COALESCE(TRIM(f.ORGADESC), 'N/A') AS RC_DESC,
-
+    COALESCE(f.F0740_ORGAUNIT_DESC, 'N/A') AS RC_DESC,
     SUBSTR(DIGITS(DECIMAL(a.TRDAT, 8, 0)), 5, 2) || '/' ||
     SUBSTR(DIGITS(DECIMAL(a.TRDAT, 8, 0)), 7, 2) || '/' ||
     SUBSTR(DIGITS(DECIMAL(a.TRDAT, 8, 0)), 1, 4) AS TRANS_DATE,
-
-    CAST(a.TRTYPE AS VARCHAR(20)) AS TRANS_TYPE,
-
-    CAST(a.TICKET AS VARCHAR(20)) AS TICKET_NO,
-
-    CAST(
-        COALESCE(b1.PART1, '') ||
-        COALESCE(b2.PART2, '')
-        AS VARCHAR(250)
-    ) AS PARTICULARS,
-
-    a.ANALCODE AS ANALYSIS_CODE,
-
-    COALESCE(TRIM(f.ORGADESC), 'N/A') AS INSTITUTION_NAME,
-
-    CASE
-        WHEN TRIM(a.SIGN) = '+' THEN a.LCAMT
-        ELSE 0
-    END AS DEBIT,
-
-    CASE
-        WHEN TRIM(a.SIGN) = '-' THEN a.LCAMT
-        ELSE 0
-    END AS CREDIT
-
+    CAST(a.TRTYPE AS VARCHAR(20))    AS TRANS_TYPE,
+    CAST(a.TICKET AS VARCHAR(20))    AS TICKET_NO,
+    CAST(COALESCE(b1.PART1, '') || COALESCE(b2.PART2, '') AS VARCHAR(250)) AS PARTICULARS,
+    a.ANALCODE                       AS ANALYSIS_CODE,
+    COALESCE(f.F0740_ORGAUNIT_DESC, '') AS INSTITUTION_NAME,
+    CASE WHEN TRIM(a.SIGN) = '+' THEN a.LCAMT ELSE 0 END AS DEBIT,
+    CASE WHEN TRIM(a.SIGN) = '-' THEN a.LCAMT ELSE 0 END AS CREDIT
 FROM CFASLIB.FA0210 a
-
 LEFT JOIN CFASLIB.FA0211LF1 b1
-    ON  a.TRDAT = b1.TRDAT
+    ON  a.TRDAT    = b1.TRDAT
     AND a.ORGAUNIT = b1.ORGAUNIT
-    AND a.TICKET = b1.TICKET
+    AND a.TICKET   = b1.TICKET
     AND a.POSTDATE = b1.POSTDATE
     AND a.POSTTIME = b1.POSTTIME
-
 LEFT JOIN CFASLIB.FA0211LF2 b2
-    ON  a.TRDAT = b2.TRDAT
+    ON  a.TRDAT    = b2.TRDAT
     AND a.ORGAUNIT = b2.ORGAUNIT
-    AND a.TICKET = b2.TICKET
+    AND a.TICKET   = b2.TICKET
     AND a.POSTDATE = b2.POSTDATE
     AND a.POSTTIME = b2.POSTTIME
-
 LEFT JOIN CFASLIB.FA0740 f
-    ON a.ORGAUNIT = f.ORGAUNIT
-
+    ON a.ORGAUNIT = f.F0740_ORGAUNIT_CODE
 WHERE a.TRDAT BETWEEN 20250101 AND 20251231
   AND a.TICKET BETWEEN 0 AND 999999
-
-ORDER BY
-    a.ORGAUNIT,
-    a.TRDAT,
-    a.TICKET,
-    a.POSTDATE,
-    a.POSTTIME,
-    a.SIGN,
-    a.TICKETSEQ
-
+ORDER BY a.ORGAUNIT,
+         a.TRDAT,
+         a.TICKET,
+         a.POSTDATE,
+         a.POSTTIME,
+         a.SIGN,
+         a.TICKETSEQ
 FETCH FIRST 10 ROWS ONLY]]>
 	</queryString>
 	<field name="RC_CODE" class="java.lang.String"/>
@@ -118,10 +91,13 @@ FETCH FIRST 10 ROWS ONLY]]>
 	<group name="InstitutionGroup">
 		<groupExpression><![CDATA[$F{INSTITUTION_NAME}]]></groupExpression>
 		<groupFooter>
-			<band height="16" splitType="Stretch">
+			<band height="24" splitType="Stretch">
+				<line>
+					<reportElement x="0" y="19" width="802" height="1" uuid="5eff2132-90f0-4bcb-8d38-e5c7c3a5eebb"/>
+				</line>
 				<staticText>
 					<reportElement x="358" y="0" width="70" height="12" uuid="4d2cb9bd-463e-4c5d-96a8-c9e8ecb6a101"/>
-					<textElement textAlignment="Right">
+					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Total For]]></text>
@@ -150,7 +126,7 @@ FETCH FIRST 10 ROWS ONLY]]>
 				<line>
 					<reportElement x="0" y="14" width="802" height="1" uuid="6657c2cc-688c-46ce-9f32-6f261893e8e8"/>
 				</line>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="444" y="1" width="140" height="15" uuid="e5c3ce46-fd8b-4660-8c54-290c72a16b01"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="SansSerif" size="8"/>
@@ -385,7 +361,7 @@ FETCH FIRST 10 ROWS ONLY]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ANALYSIS_CODE}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="444" y="2" width="140" height="15" uuid="f8dc42f1-cfa5-4074-bc36-8329c58b8fd1"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8"/>
@@ -416,7 +392,7 @@ FETCH FIRST 10 ROWS ONLY]]>
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="15" splitType="Stretch"/>
+		<band height="10" splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
 		<band height="27" splitType="Stretch">

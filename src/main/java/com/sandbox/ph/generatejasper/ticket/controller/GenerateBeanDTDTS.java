@@ -14,7 +14,7 @@ import org.primefaces.model.StreamedContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sandbox.ph.generatejasper.ticket.daoImpl.TicketDaoImpl;
+import com.sandbox.ph.generatejasper.ticket.daoImpl.DtdtsTicketDaoImpl;
 import com.sandbox.ph.generatejasper.ticket.dto.TicketDto;
 
 import jakarta.faces.application.FacesMessage;
@@ -45,16 +45,14 @@ public class GenerateBeanDTDTS implements Serializable {
     // =========================================================
 
     private static final String MAIN_REPORT = "/reports/Activity Report.jrxml";
-
     private static final String SUB_REPORT = "/reports/sub2.jrxml";
-
     private static final String SUB_REPORT_3 = "/reports/sub3.jrxml";
 
     // =========================================================
     // DAO
     // =========================================================
 
-    private transient TicketDaoImpl ticketDao = new TicketDaoImpl();
+    private transient DtdtsTicketDaoImpl ticketDao = new DtdtsTicketDaoImpl();
 
     // =========================================================
     // DTDTS FILTERS
@@ -249,11 +247,7 @@ public class GenerateBeanDTDTS implements Serializable {
                     "Calling DTDTS DAO...");
 
             List<TicketDto> rows = ticketDao.findReportDataByDateAndTicketRange(
-                    fromDate,
-                    toDate,
-                    ticketNoFrom.trim(),
-                    ticketNoTo.trim(),
-                    orgaCode.trim());
+                    fromDate, toDate, ticketNoFrom.trim(), ticketNoTo.trim(), orgaCode.trim());
 
             log.info("DTDTS records found: {}", rows != null ? rows.size() : 0);
 
@@ -665,12 +659,12 @@ public class GenerateBeanDTDTS implements Serializable {
         this.reportGenerated = reportGenerated;
     }
 
-    public TicketDaoImpl getTicketDao() {
+    public DtdtsTicketDaoImpl getTicketDao() {
         return ticketDao;
     }
 
-    public void setTicketDao(
-            TicketDaoImpl ticketDao) {
+    public void setTicketDao(DtdtsTicketDaoImpl ticketDao) {
         this.ticketDao = ticketDao;
     }
+
 }
