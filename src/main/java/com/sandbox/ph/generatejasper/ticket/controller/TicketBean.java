@@ -29,6 +29,7 @@ public class TicketBean implements Serializable {
 
     // DDSOA filters
     private String ticketNumber;
+    private String testFilter;
 
     @PostConstruct
     public void init() {
@@ -36,6 +37,7 @@ public class TicketBean implements Serializable {
         // Key = Label shown in dropdown, Value = Submitted value
         reportTypes.put("Demand Deposit Statement of Account (DDSOA)", "DDSOA");
         reportTypes.put("Demand and Time Deposit Transaction Summary (DTDTS)", "DTDTS");
+        reportTypes.put("Generate Test Jasper", "TEST_JASPER");
     }
 
     public void handleProceed() {
@@ -51,6 +53,8 @@ public class TicketBean implements Serializable {
             PrimeFaces.current().executeScript("PF('reportFilterDialog').show();");
         } else if ("DDSOA".equals(reportType)) {
             PrimeFaces.current().executeScript("PF('ddsoaFilterDialog').show();");
+        } else if ("TEST_JASPER".equals(reportType)) {
+            PrimeFaces.current().executeScript("PF('testFilterDialog').show();");
         }
     }
 
@@ -110,4 +114,13 @@ public class TicketBean implements Serializable {
     public void setTicketNumber(String ticketNumber) {
         this.ticketNumber = ticketNumber;
     }
+
+    public String getTestFilter() {
+        return testFilter;
+    }
+
+    public void setTestFilter(String testFilter) {
+        this.testFilter = testFilter;
+    }
+
 }

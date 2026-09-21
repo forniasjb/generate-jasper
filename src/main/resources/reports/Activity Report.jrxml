@@ -96,7 +96,7 @@ FETCH FIRST 10 ROWS ONLY]]>
 					<reportElement x="0" y="19" width="802" height="1" uuid="5eff2132-90f0-4bcb-8d38-e5c7c3a5eebb"/>
 				</line>
 				<staticText>
-					<reportElement x="358" y="0" width="70" height="12" uuid="4d2cb9bd-463e-4c5d-96a8-c9e8ecb6a101"/>
+					<reportElement x="345" y="0" width="70" height="12" uuid="4d2cb9bd-463e-4c5d-96a8-c9e8ecb6a101"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="8" isBold="true"/>
 					</textElement>
@@ -127,7 +127,7 @@ FETCH FIRST 10 ROWS ONLY]]>
 					<reportElement x="0" y="14" width="802" height="1" uuid="6657c2cc-688c-46ce-9f32-6f261893e8e8"/>
 				</line>
 				<textField isBlankWhenNull="true">
-					<reportElement x="444" y="1" width="140" height="15" uuid="e5c3ce46-fd8b-4660-8c54-290c72a16b01"/>
+					<reportElement x="432" y="1" width="152" height="15" uuid="e5c3ce46-fd8b-4660-8c54-290c72a16b01"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="SansSerif" size="8"/>
 					</textElement>
@@ -362,7 +362,7 @@ FETCH FIRST 10 ROWS ONLY]]>
 				<textFieldExpression><![CDATA[$F{ANALYSIS_CODE}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="444" y="2" width="140" height="15" uuid="f8dc42f1-cfa5-4074-bc36-8329c58b8fd1"/>
+				<reportElement x="432" y="2" width="152" height="15" uuid="f8dc42f1-cfa5-4074-bc36-8329c58b8fd1"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>

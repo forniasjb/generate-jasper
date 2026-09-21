@@ -52,11 +52,17 @@
                 padding-left: 2.5rem;
             }
             .dialog-title-accent {
-                border-left: 4px solid #fd7e14 !important;
+                border-left: 4px solid #2373f4 !important;
                 padding-left: 10px !important;
                 margin-left: -4px;
                 line-height: 1.2;
             }
+
+            /* Card Left Accent Utility Style */
+            .card-left-accent {
+                border-left: 9px solid #2373f4 !important;
+            }
+
             .rounded-dialog .ui-dialog-content {
                 border-bottom-left-radius: 8px;
                 border-bottom-right-radius: 8px;
@@ -190,7 +196,7 @@
                                 responsive="true"
                                 width="850"
                                 focus="closebtn"
-                                styleClass="rounded-dialog"
+                                styleClass="rounded-dialog card-left-accent"
                             >
                                 <f:facet name="header">
                                     <span class="dialog-title-accent">
@@ -336,7 +342,7 @@
                                 responsive="true"
                                 width="850"
                                 focus="closeddsoabtn"
-                                styleClass="rounded-dialog"
+                                styleClass="rounded-dialog card-left-accent"
                             >
                                 <f:facet name="header">
                                     <span class="dialog-title-accent"
@@ -457,6 +463,73 @@
                                         icon="pi pi-times"
                                         type="button"
                                         onclick="PF('ddsoaFilterDialog').hide()"
+                                        styleClass="ui-button-secondary"
+                                    />
+                                </f:facet>
+                            </p:dialog>
+
+                            <!-- 3. Test Jasper Dialog -->
+                            <p:dialog
+                                id="testFilterDialog"
+                                widgetVar="testFilterDialog"
+                                modal="true"
+                                responsive="true"
+                                width="850"
+                                closable="false"
+                                showHeader="false"
+                                styleClass="rounded-dialog card-left-accent"
+                            >
+                                <f:facet name="header">
+                                    <span class="dialog-title-accent"
+                                        >Jasper Generate</span
+                                    >
+                                </f:facet>
+
+                                <!-- Custom Panel Header -->
+
+                                <p:panelGrid
+                                    columns="4"
+                                    layout="grid"
+                                    styleClass="ui-panelgrid-blank ui-fluid"
+                                    style="padding: 10px"
+                                >
+                                    <p:outputLabel
+                                        for="testFilterInput"
+                                        value="Test Filter:"
+                                        style="
+                                            font-size: 14px;
+                                            font-weight: normal;
+                                            margin-top: 0.5rem;
+                                        "
+                                    />
+                                    <p:inputText
+                                        id="testFilterInput"
+                                        value="#{reportTypeSelection.testFilter}"
+                                        style="width: 100%; font-size: 14px"
+                                    />
+                                </p:panelGrid>
+
+                                <f:facet name="footer">
+                                    <!-- SUBMIT TEST JASPER -->
+                                    <p:commandButton
+                                        id="submitTestJasper"
+                                        value="Submit"
+                                        icon="pi pi-check"
+                                        styleClass="ui-button-success"
+                                        action="#{reportTypeSelection.generatePdf}"
+                                        process="@form"
+                                        update=":reportgenerationform:message :reportgenerationform:dtdtsReportPreview"
+                                    />
+
+                                    <!-- CLOSE -->
+                                    <p:commandButton
+                                        id="closeTestBtn"
+                                        value="Close"
+                                        icon="pi pi-times"
+                                        action="#{reportTypeSelection.clearFilters}"
+                                        process="@this"
+                                        update="testFilterDialog"
+                                        oncomplete="PF('testFilterDialog').hide();"
                                         styleClass="ui-button-secondary"
                                     />
                                 </f:facet>
