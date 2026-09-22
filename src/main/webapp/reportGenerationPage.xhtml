@@ -78,6 +78,16 @@
                 border-top-right-radius: 10px;
                 border-bottom: 1px solid #dee2e6;
             }
+
+            .ui-button.btn-lightblue {
+                background-color: lightblue !important;
+                border-color: lightblue !important;
+                color: #212529 !important; /* Dark text for contrast */
+            }
+            .ui-button.btn-lightblue:hover {
+                background-color: #87ceeb !important; /* Slightly darker shade on hover */
+                border-color: #7ab8d8 !important;
+            }
         </style>
 
         <title>DDA | Jasper Generate</title>
@@ -469,14 +479,14 @@
                             </p:dialog>
 
                             <!-- 3. Test Jasper Dialog -->
+                            <!-- 3. Test Jasper Dialog -->
                             <p:dialog
                                 id="testFilterDialog"
                                 widgetVar="testFilterDialog"
                                 modal="true"
                                 responsive="true"
                                 width="850"
-                                closable="false"
-                                showHeader="false"
+                                focus="closeTestBtn"
                                 styleClass="rounded-dialog card-left-accent"
                             >
                                 <f:facet name="header">
@@ -486,7 +496,6 @@
                                 </f:facet>
 
                                 <!-- Custom Panel Header -->
-
                                 <p:panelGrid
                                     columns="4"
                                     layout="grid"
@@ -504,7 +513,7 @@
                                     />
                                     <p:inputText
                                         id="testFilterInput"
-                                        value="#{reportTypeSelection.testFilter}"
+                                        value="#{generateSingleFilterBean.testFilter}"
                                         style="width: 100%; font-size: 14px"
                                     />
                                 </p:panelGrid>
@@ -512,13 +521,12 @@
                                 <f:facet name="footer">
                                     <!-- SUBMIT TEST JASPER -->
                                     <p:commandButton
-                                        id="submitTestJasper"
                                         value="Submit"
                                         icon="pi pi-check"
                                         styleClass="ui-button-success"
-                                        action="#{reportTypeSelection.generatePdf}"
+                                        action="#{generateSingleFilterBean.generateSingleFilterBeanAction}"
                                         process="@form"
-                                        update=":reportgenerationform:message :reportgenerationform:dtdtsReportPreview"
+                                        update=":reportgenerationform:message :reportgenerationform:testJasperReportPreview"
                                     />
 
                                     <!-- CLOSE -->
@@ -526,16 +534,34 @@
                                         id="closeTestBtn"
                                         value="Close"
                                         icon="pi pi-times"
-                                        action="#{reportTypeSelection.clearFilters}"
-                                        process="@this"
-                                        update="testFilterDialog"
-                                        oncomplete="PF('testFilterDialog').hide();"
+                                        type="button"
+                                        onclick="PF('testFilterDialog').hide()"
                                         styleClass="ui-button-secondary"
                                     />
                                 </f:facet>
                             </p:dialog>
 
                             <!-- Report Previews -->
+                            <!-- TEST JASPER PREVIEW -->
+                            <p:outputPanel
+                                id="testJasperReportPreview"
+                                style="display: block; margin-top: 20px"
+                            >
+                                <h:panelGroup
+                                    rendered="#{generateSingleFilterBean.reportGenerated}"
+                                >
+                                    <object
+                                        data="data:application/pdf;base64,#{generateSingleFilterBean.pdfBase64}"
+                                        type="application/pdf"
+                                        width="100%"
+                                        height="600px"
+                                    >
+                                        Your browser does not support PDFs.
+                                    </object>
+                                </h:panelGroup>
+                            </p:outputPanel>
+
+                            <!-- DTDTS -->
                             <p:outputPanel
                                 id="dtdtsReportPreview"
                                 style="display: block; margin-top: 20px"
@@ -554,6 +580,7 @@
                                 </h:panelGroup>
                             </p:outputPanel>
 
+                            <!-- DDSOA -->
                             <p:outputPanel
                                 id="ddsoaReportPreview"
                                 style="display: block; margin-top: 20px"

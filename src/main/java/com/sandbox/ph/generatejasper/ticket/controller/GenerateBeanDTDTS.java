@@ -71,9 +71,7 @@ public class GenerateBeanDTDTS implements Serializable {
     // =========================================================
 
     private byte[] pdfBytes;
-
     private String pdfBase64;
-
     private boolean reportGenerated = false;
 
     // =========================================================
@@ -552,11 +550,11 @@ public class GenerateBeanDTDTS implements Serializable {
     public void clearFilters() {
 
         log.info("Clearing DTDTS filters...");
-        fromDate = null;
-        toDate = null;
-        ticketNoFrom = null;
-        ticketNoTo = null;
-        orgaCode = null;
+        // fromDate = null;
+        // toDate = null;
+        // ticketNoFrom = null;
+        // ticketNoTo = null;
+        // orgaCode = null;
         pdfBytes = null;
         pdfBase64 = null;
         reportGenerated = false;

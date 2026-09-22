@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.StreamedContent;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
@@ -30,6 +31,12 @@ public class TicketBean implements Serializable {
     // DDSOA filters
     private String ticketNumber;
     private String testFilter;
+
+    // StreamedContent for displaying PDF in UI
+    private StreamedContent reportStream;
+
+    private String pdfBase64;
+    private boolean testReportGenerated;
 
     @PostConstruct
     public void init() {
@@ -121,6 +128,30 @@ public class TicketBean implements Serializable {
 
     public void setTestFilter(String testFilter) {
         this.testFilter = testFilter;
+    }
+
+    public String getPdfBase64() {
+        return pdfBase64;
+    }
+
+    public void setPdfBase64(String pdfBase64) {
+        this.pdfBase64 = pdfBase64;
+    }
+
+    public boolean isTestReportGenerated() {
+        return testReportGenerated;
+    }
+
+    public void setTestReportGenerated(boolean testReportGenerated) {
+        this.testReportGenerated = testReportGenerated;
+    }
+
+    public StreamedContent getReportStream() {
+        return reportStream;
+    }
+
+    public void setReportStream(StreamedContent reportStream) {
+        this.reportStream = reportStream;
     }
 
 }

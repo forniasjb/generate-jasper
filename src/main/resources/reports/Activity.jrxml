@@ -31,7 +31,7 @@
     <parameter name="testFilter" class="java.lang.String">
         <defaultValueExpression><![CDATA[""]]></defaultValueExpression>
     </parameter>
-	<queryString>
+<queryString>
 		<![CDATA[SELECT
     CAST(a.ORGAUNIT AS VARCHAR(20)) AS RC_CODE,
     COALESCE(f.F0740_ORGAUNIT_DESC, 'N/A') AS RC_DESC,
@@ -41,7 +41,7 @@
     CAST(a.TRTYPE AS VARCHAR(20))    AS TRANS_TYPE,
     CAST(a.TICKET AS VARCHAR(20))    AS TICKET_NO,
     CAST(COALESCE(b1.PART1, '') || COALESCE(b2.PART2, '') AS VARCHAR(250)) AS PARTICULARS,
-    a.ANALCODE                       AS ANALYSIS_CODE,
+    a.ANALCODE                        AS ANALYSIS_CODE,
     COALESCE(f.F0740_ORGAUNIT_DESC, '') AS INSTITUTION_NAME,
     CASE WHEN TRIM(a.SIGN) = '+' THEN a.LCAMT ELSE 0 END AS DEBIT,
     CASE WHEN TRIM(a.SIGN) = '-' THEN a.LCAMT ELSE 0 END AS CREDIT
@@ -62,6 +62,7 @@ LEFT JOIN CFASLIB.FA0740 f
     ON a.ORGAUNIT = f.F0740_ORGAUNIT_CODE
 WHERE a.TRDAT BETWEEN 20250101 AND 20251231
   AND a.TICKET BETWEEN 0 AND 999999
+  AND ($P{testFilter} IS NULL OR $P{testFilter} = '' OR CAST(a.TICKET AS VARCHAR(20)) LIKE '%' || $P{testFilter} || '%')
 ORDER BY a.ORGAUNIT,
          a.TRDAT,
          a.TICKET,
@@ -396,7 +397,6 @@ FETCH FIRST 10 ROWS ONLY]]>
 		</band>
 	</detail>
 	<columnFooter>
-
 		<band height="10" splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
