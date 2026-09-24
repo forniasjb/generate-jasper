@@ -260,4 +260,5 @@ public class TicketDto {
     public String getINSTITUTION_NAME() {
         return institutionName;
     }
+
 }

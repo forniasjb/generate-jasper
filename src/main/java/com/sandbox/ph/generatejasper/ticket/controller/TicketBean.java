@@ -44,7 +44,7 @@ public class TicketBean implements Serializable {
         // Key = Label shown in dropdown, Value = Submitted value
         reportTypes.put("Demand Deposit Statement of Account (DDSOA)", "DDSOA");
         reportTypes.put("Demand and Time Deposit Transaction Summary (DTDTS)", "DTDTS");
-        reportTypes.put("Generate Test Jasper", "TEST_JASPER");
+        reportTypes.put("Activity Report", "ACTIVITY_REPORT");
     }
 
     public void handleProceed() {
@@ -60,8 +60,8 @@ public class TicketBean implements Serializable {
             PrimeFaces.current().executeScript("PF('reportFilterDialog').show();");
         } else if ("DDSOA".equals(reportType)) {
             PrimeFaces.current().executeScript("PF('ddsoaFilterDialog').show();");
-        } else if ("TEST_JASPER".equals(reportType)) {
-            PrimeFaces.current().executeScript("PF('testFilterDialog').show();");
+        } else if ("ACTIVITY_REPORT".equals(reportType)) {
+            PrimeFaces.current().executeScript("PF('activityReportDialog').show();");
         }
     }
 

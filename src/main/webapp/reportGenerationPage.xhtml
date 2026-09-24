@@ -333,12 +333,13 @@
 
                                     <!-- CLOSE -->
                                     <p:commandButton
+                                        id="closebtn"
                                         value="Close"
                                         icon="pi pi-times"
-                                        action="#{generateBeanDTDTS.clearFilters}"
-                                        process="@this"
-                                        update="reportFilterDialog"
-                                        oncomplete="PF('reportFilterDialog').hide();"
+                                        type="button"
+                                        onclick="
+                                            PF('reportFilterDialog').hide()
+                                        "
                                         styleClass="ui-button-secondary"
                                     />
                                 </f:facet>
@@ -479,13 +480,12 @@
                             </p:dialog>
 
                             <!-- 3. Test Jasper Dialog -->
-                            <!-- 3. Test Jasper Dialog -->
                             <p:dialog
-                                id="testFilterDialog"
-                                widgetVar="testFilterDialog"
+                                id="activityReportDialog"
+                                widgetVar="activityReportDialog"
                                 modal="true"
                                 responsive="true"
-                                width="850"
+                                width="700"
                                 focus="closeTestBtn"
                                 styleClass="rounded-dialog card-left-accent"
                             >
@@ -495,53 +495,43 @@
                                     >
                                 </f:facet>
 
-                                <!-- Custom Panel Header -->
-                                <p:panelGrid
-                                    columns="4"
-                                    layout="grid"
-                                    styleClass="ui-panelgrid-blank ui-fluid"
-                                    style="padding: 10px"
-                                >
-                                    <p:outputLabel
-                                        for="testFilterInput"
-                                        value="Test Filter:"
-                                        style="
-                                            font-size: 14px;
-                                            font-weight: normal;
-                                            margin-top: 0.5rem;
-                                        "
-                                    />
-                                    <p:inputText
-                                        id="testFilterInput"
-                                        value="#{generateSingleFilterBean.testFilter}"
-                                        style="width: 100%; font-size: 14px"
-                                    />
-                                </p:panelGrid>
+                                <div class="form-section">
+                                    <div class="form-section-title">
+                                        <i class="pi pi-filter"></i> Filter
+                                        Criteria
+                                    </div>
+                                    <div class="field-group">
+                                        <label for="testFilterInput"
+                                            >Ticket No:</label
+                                        >
+                                        <p:inputText
+                                            id="testFilterInput"
+                                            value="#{generateSingleFilterBean.testFilter}"
+                                        />
+                                    </div>
+                                </div>
 
                                 <f:facet name="footer">
-                                    <!-- SUBMIT TEST JASPER -->
                                     <p:commandButton
                                         value="Submit"
                                         icon="pi pi-check"
-                                        styleClass="ui-button-success"
+                                        styleClass="btn-submit"
                                         action="#{generateSingleFilterBean.generateSingleFilterBeanAction}"
                                         process="@form"
                                         update=":reportgenerationform:message :reportgenerationform:testJasperReportPreview"
                                     />
-
-                                    <!-- CLOSE -->
                                     <p:commandButton
                                         id="closeTestBtn"
                                         value="Close"
                                         icon="pi pi-times"
                                         type="button"
                                         onclick="PF('testFilterDialog').hide()"
-                                        styleClass="ui-button-secondary"
+                                        styleClass="btn-cancel"
                                     />
                                 </f:facet>
                             </p:dialog>
 
-                            <!-- Report Previews -->
+                            <!-- REPORT PREVIEW -->
                             <!-- TEST JASPER PREVIEW -->
                             <p:outputPanel
                                 id="testJasperReportPreview"
@@ -603,12 +593,12 @@
                 </div>
             </div>
         </div>
+
         <!-- Core Scripts -->
         <script src="#{resource['js/adminlte.min.js']}" nonce="DDA"></script>
         <script src="#{resource['js/settings.js']}" nonce="DDA"></script>
         <script
             src="#{resource['js/bootstrap/bootstrap.bundle.min.js']}"
-            nonce="DDA"
         ></script>
     </h:body>
 </html>
