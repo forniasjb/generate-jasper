@@ -4,14 +4,14 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.primefaces.PrimeFaces;
+import org.primefaces.model.StreamedContent;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
-
-import org.primefaces.PrimeFaces;
-import org.primefaces.model.StreamedContent;
 
 @Named("reportTypeSelection")
 @ViewScoped
@@ -34,7 +34,6 @@ public class TicketBean implements Serializable {
 
     // StreamedContent for displaying PDF in UI
     private StreamedContent reportStream;
-
     private String pdfBase64;
     private boolean testReportGenerated;
 
@@ -49,7 +48,6 @@ public class TicketBean implements Serializable {
 
     public void handleProceed() {
         FacesContext context = FacesContext.getCurrentInstance();
-
         if (reportType == null || reportType.trim().isEmpty()) {
             context.addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_WARN, "Warning", "Please select a report type."));
@@ -149,7 +147,6 @@ public class TicketBean implements Serializable {
     public StreamedContent getReportStream() {
         return reportStream;
     }
-
     public void setReportStream(StreamedContent reportStream) {
         this.reportStream = reportStream;
     }
