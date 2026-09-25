@@ -4,14 +4,14 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.primefaces.PrimeFaces;
-import org.primefaces.model.StreamedContent;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
+
+import org.primefaces.PrimeFaces;
+import org.primefaces.model.StreamedContent;
 
 @Named("reportTypeSelection")
 @ViewScoped
@@ -51,21 +51,21 @@ public class TicketBean implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
 
         if (reportType == null || reportType.trim().isEmpty()) {
-            context.addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning", "Please select a report type."));
+            context.addMessage(null, new FacesMessage(
+                    FacesMessage.SEVERITY_WARN, "Warning", "Please select a report type."));
             return;
         }
 
-        if ("DTDTS".equals(reportType)) {
-            PrimeFaces.current().executeScript("PF('reportFilterDialog').show();");
-        } else if ("DDSOA".equals(reportType)) {
-            PrimeFaces.current().executeScript("PF('ddsoaFilterDialog').show();");
-        } else if ("ACTIVITY_REPORT".equals(reportType)) {
-            PrimeFaces.current().executeScript("PF('activityReportDialog').show();");
+        switch (reportType) {
+            case "DTDTS" -> PrimeFaces.current().executeScript("PF('reportFilterDialog').show();");
+            case "DDSOA" -> PrimeFaces.current().executeScript("PF('ddsoaFilterDialog').show();");
+            case "ACTIVITY_REPORT" -> PrimeFaces.current().executeScript("PF('activityReportDialog').show();");
+            default -> context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning", "Invalid report type selected."));
         }
     }
 
-    // Getters and Setters
+    // ─── Getters & Setters ────────────────────────────────
     public String getReportType() {
         return reportType;
     }
@@ -153,5 +153,4 @@ public class TicketBean implements Serializable {
     public void setReportStream(StreamedContent reportStream) {
         this.reportStream = reportStream;
     }
-
 }

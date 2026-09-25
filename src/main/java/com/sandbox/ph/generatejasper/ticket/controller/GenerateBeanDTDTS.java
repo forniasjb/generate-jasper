@@ -31,11 +31,8 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 @Named("generateBeanDTDTS")
 @ViewScoped
 public class GenerateBeanDTDTS implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
     private static final Logger log = LoggerFactory.getLogger(GenerateBeanDTDTS.class);
-
     private static final String MSG_REQUIRED = "Required";
     private static final String MSG_WARNING = "Warning";
     private static final String MSG_ERROR = "Error";

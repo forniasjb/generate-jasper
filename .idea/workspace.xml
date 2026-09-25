@@ -21,6 +21,9 @@
   <component name="FindBugs-IDEA-Workspace">
     <toolWindowGroupBy>Class</toolWindowGroupBy>
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="3J1wgJmCeuCFR7N99YcORkyKGQu" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />

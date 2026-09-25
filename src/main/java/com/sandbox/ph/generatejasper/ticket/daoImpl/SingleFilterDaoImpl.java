@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sandbox.ph.generatejasper.ticket.dto.SingleFilterTicketDto;
@@ -29,7 +30,7 @@ public class SingleFilterDaoImpl implements Serializable {
      * @return
      */
     public List<SingleFilterTicketDto> findDataByTestFilter(String testFilter) {
-        LOGGER.info("Executing findDataByTestFilter with filter: " + testFilter);
+        LOGGER.log(Level.INFO, "Executing findDataByTestFilter with filter: {0}", testFilter);
 
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT ");
@@ -47,17 +48,14 @@ public class SingleFilterDaoImpl implements Serializable {
         sql.append("  CASE WHEN TRIM(a.SIGN) = '-' THEN a.LCAMT ELSE 0 END AS CREDIT ");
         sql.append("FROM CFASLIB.FA0210 a ");
         sql.append("LEFT JOIN CFASLIB.FA0211LF1 b1 ");
-        sql.append(
-                "  ON a.TRDAT = b1.TRDAT AND a.ORGAUNIT = b1.ORGAUNIT AND a.TICKET = b1.TICKET AND a.POSTDATE = b1.POSTDATE AND a.POSTTIME = b1.POSTTIME ");
+        sql.append("  ON a.TRDAT = b1.TRDAT AND a.ORGAUNIT = b1.ORGAUNIT AND a.TICKET = b1.TICKET AND a.POSTDATE = b1.POSTDATE AND a.POSTTIME = b1.POSTTIME ");
         sql.append("LEFT JOIN CFASLIB.FA0211LF2 b2 ");
-        sql.append(
-                "  ON a.TRDAT = b2.TRDAT AND a.ORGAUNIT = b2.ORGAUNIT AND a.TICKET = b2.TICKET AND a.POSTDATE = b2.POSTDATE AND a.POSTTIME = b2.POSTTIME ");
+        sql.append("  ON a.TRDAT = b2.TRDAT AND a.ORGAUNIT = b2.ORGAUNIT AND a.TICKET = b2.TICKET AND a.POSTDATE = b2.POSTDATE AND a.POSTTIME = b2.POSTTIME ");
         sql.append("LEFT JOIN CFASLIB.FA0740 f ");
         sql.append("  ON a.ORGAUNIT = f.F0740_ORGAUNIT_CODE ");
         sql.append("WHERE a.TRDAT BETWEEN 20250101 AND 20251231 ");
         sql.append("  AND a.TICKET BETWEEN 0 AND 999999 ");
-        sql.append(
-                "  AND (:testFilter IS NULL OR :testFilter = '' OR CAST(a.TICKET AS VARCHAR(20)) LIKE :likeFilter) ");
+        sql.append("  AND (:testFilter IS NULL OR :testFilter = '' OR CAST(a.TICKET AS VARCHAR(20)) LIKE :likeFilter) ");
         sql.append("ORDER BY a.ORGAUNIT, a.TRDAT, a.TICKET, a.POSTDATE, a.POSTTIME, a.SIGN, a.TICKETSEQ ");
         sql.append("FETCH FIRST 10 ROWS ONLY");
 
@@ -73,7 +71,6 @@ public class SingleFilterDaoImpl implements Serializable {
                     .getResultList();
 
             if (results != null && !results.isEmpty()) {
-                // 2. I-setup SimpleDateFormatter to MM/dd/yyyy galing sa SQL
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
                 for (Object[] row : results) {
@@ -106,13 +103,11 @@ public class SingleFilterDaoImpl implements Serializable {
                     dtoList.add(dto);
                 }
             }
-
             LOGGER.info("Query executed successfully. Total rows mapped: " + dtoList.size());
         } catch (Exception e) {
             LOGGER.severe("Error executing query: " + e.getMessage());
             e.printStackTrace();
         }
-
         return dtoList;
     }
 }

@@ -27,7 +27,6 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 public class GenerateSingleFilterBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     private String testFilter;
     private boolean reportGenerated = false;
     private String pdfBase64;
@@ -83,7 +82,6 @@ public class GenerateSingleFilterBean implements Serializable {
         System.out.println("-------------------------------------------------");
 
         FacesContext context = FacesContext.getCurrentInstance();
-
         if (context == null) {
             System.err.println("FacesContext is NULL.");
             return;
@@ -98,12 +96,7 @@ public class GenerateSingleFilterBean implements Serializable {
         // =====================================================
 
         if (testFilter == null || testFilter.isBlank()) {
-            context.addMessage(
-                    null,
-                    new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR,
-                            "Required",
-                            "Test Filter is required."));
+            context.addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,"Required","Test Filter is required."));
             return;
         }
 
@@ -114,12 +107,7 @@ public class GenerateSingleFilterBean implements Serializable {
             List<SingleFilterTicketDto> rawData = singleFilterDaoImpl.findDataByTestFilter(testFilter.trim());
 
             if (rawData == null || rawData.isEmpty()) {
-                context.addMessage(
-                        null,
-                        new FacesMessage(
-                                FacesMessage.SEVERITY_WARN,
-                                "Warning",
-                                "No data found for the test filter: " + testFilter));
+                context.addMessage(null,new FacesMessage(FacesMessage.SEVERITY_WARN,"Warning","No data found for the test filter: " + testFilter));
                 return;
             }
 
@@ -176,12 +164,7 @@ public class GenerateSingleFilterBean implements Serializable {
                 byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
                 if (pdfBytes == null || pdfBytes.length == 0) {
-                    context.addMessage(
-                            null,
-                            new FacesMessage(
-                                    FacesMessage.SEVERITY_ERROR,
-                                    "Error",
-                                    "Generated PDF is empty."));
+                    context.addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error","Generated PDF is empty."));
                     return;
                 }
 
@@ -195,22 +178,12 @@ public class GenerateSingleFilterBean implements Serializable {
                 // SUCCESS MESSAGE
                 // =================================================
 
-                context.addMessage(
-                        null,
-                        new FacesMessage(
-                                FacesMessage.SEVERITY_INFO,
-                                "Success",
-                                "Jasper generated successfully with filter: " + testFilter));
+                context.addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"Success","Jasper generated successfully with filter: " + testFilter));
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            context.addMessage(
-                    null,
-                    new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR,
-                            "Error",
-                            "Failed to generate Jasper report: " + e.getMessage()));
+            context.addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,"Error","Failed to generate Jasper report: " + e.getMessage()));
         } finally {
             long executionTime = System.currentTimeMillis() - startTime;
             System.out.println("Execution time = " + executionTime + " ms");

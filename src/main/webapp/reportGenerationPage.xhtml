@@ -10,10 +10,7 @@
     <h:head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
 
@@ -96,29 +93,15 @@
     <h:body styleClass="hold-transition sidebar-mini layout-footer-fixed">
         <div class="wrapper">
             <!-- Sidebar Section -->
-            <aside
-                id="main-sidebar"
-                class="main-sidebar sidebar-dark-primary elevation-4"
-            >
-                <a
-                    href="#{request.contextPath}/reportGenerationPage.xhtml"
-                    class="brand-link"
-                >
+            <aside id="main-sidebar" class="main-sidebar sidebar-dark-primary elevation-4">
+                <a href="#{request.contextPath}/reportGenerationPage.xhtml" class="brand-link">
                     <span class="brand-text">Jasper ReportGenerate</span>
                 </a>
                 <div class="sidebar">
                     <nav class="mt-3">
-                        <ul
-                            class="nav nav-pills nav-sidebar flex-column"
-                            data-widget="treeview"
-                            role="menu"
-                            data-accordion="false"
-                        >
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                             <li class="nav-item">
-                                <h:outputLink
-                                    value="#{request.contextPath}/reportGenerationPage.xhtml"
-                                    styleClass="nav-link active"
-                                >
+                                <h:outputLink value="#{request.contextPath}/reportGenerationPage.xhtml" styleClass="nav-link active">
                                     <i class="nav-icon pi pi-file-pdf"></i>
                                     <p>Report Generate PDF</p>
                                 </h:outputLink>
@@ -139,30 +122,17 @@
                     "
                 >
                     <div class="card shadow mb-4" style="padding: 20px">
-                        <p:growl
-                            id="growl"
-                            showSummary="true"
-                            showDetail="true"
-                            life="4000"
-                        >
+                        <p:growl id="growl" showSummary="true" showDetail="true" life="4000">
                             <p:autoUpdate />
                         </p:growl>
 
                         <h:form id="reportgenerationform">
-                            <p:messages
-                                id="message"
-                                showDetail="true"
-                                closable="true"
-                            >
+                            <p:messages id="message" showDetail="true" closable="true">
                                 <p:autoUpdate />
                             </p:messages>
 
                             <p:panel header="Report Generation">
-                                <p:panelGrid
-                                    columns="3"
-                                    layout="grid"
-                                    styleClass="ui-panelgrid-blank ui-fluid report-selection-grid"
-                                >
+                                <p:panelGrid columns="3" layout="grid" styleClass="ui-panelgrid-blank ui-fluid report-selection-grid">
                                     <p:outputLabel
                                         value="Report Type"
                                         style="
@@ -171,19 +141,9 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-                                    <p:selectOneMenu
-                                        style="width: 100%"
-                                        id="option"
-                                        value="#{reportTypeSelection.reportType}"
-                                    >
-                                        <f:selectItem
-                                            itemLabel="Select One"
-                                            itemValue=""
-                                            noSelectionOption="true"
-                                        />
-                                        <f:selectItems
-                                            value="#{reportTypeSelection.reportTypes}"
-                                        />
+                                    <p:selectOneMenu style="width: 100%" id="option" value="#{reportTypeSelection.reportType}">
+                                        <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="#{reportTypeSelection.reportTypes}" />
                                     </p:selectOneMenu>
                                     <p:commandButton
                                         id="proceedBtn"
@@ -198,28 +158,13 @@
                                 </p:panelGrid>
                             </p:panel>
 
-                            <!-- 1. DTDTS Dialog -->
-                            <p:dialog
-                                id="reportFilterDialog"
-                                widgetVar="reportFilterDialog"
-                                modal="true"
-                                responsive="true"
-                                width="850"
-                                focus="closebtn"
-                                styleClass="rounded-dialog card-left-accent"
-                            >
+                            <!-- 1. DTDTS Dialog (Updated with dtdtsBean) -->
+                            <p:dialog id="reportFilterDialog" widgetVar="reportFilterDialog" modal="true" responsive="true" width="750" focus="closebtn" styleClass="rounded-dialog card-left-accent">
                                 <f:facet name="header">
-                                    <span class="dialog-title-accent">
-                                        DTDTS Report Filters
-                                    </span>
+                                    <span class="dialog-title-accent">DTDTS Report Filters</span>
                                 </f:facet>
 
-                                <p:panelGrid
-                                    columns="4"
-                                    layout="grid"
-                                    styleClass="ui-panelgrid-blank ui-fluid"
-                                    style="padding: 10px"
-                                >
+                                <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid" style="padding: 10px">
                                     <!-- Date From -->
                                     <p:outputLabel
                                         for="dtdtsFrom"
@@ -230,17 +175,8 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-
-                                    <p:datePicker
-                                        id="dtdtsFrom"
-                                        value="#{generateBeanDTDTS.fromDate}"
-                                        pattern="MM/dd/yyyy"
-                                        showIcon="true"
-                                        style="width: 100%"
-                                    >
-                                        <f:convertDateTime
-                                            pattern="MM/dd/yyyy"
-                                        />
+                                    <p:datePicker id="dtdtsFrom" value="#{dtdtsBean.fromDate}" pattern="MM/dd/yyyy" showIcon="true" style="width: 100%">
+                                        <f:convertDateTime pattern="MM/dd/yyyy" />
                                     </p:datePicker>
 
                                     <!-- Date To -->
@@ -253,70 +189,21 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-
-                                    <p:datePicker
-                                        id="dtdtsTo"
-                                        value="#{generateBeanDTDTS.toDate}"
-                                        pattern="MM/dd/yyyy"
-                                        showIcon="true"
-                                        style="width: 100%"
-                                    >
-                                        <f:convertDateTime
-                                            pattern="MM/dd/yyyy"
-                                        />
+                                    <p:datePicker id="dtdtsTo" value="#{dtdtsBean.toDate}" pattern="MM/dd/yyyy" showIcon="true" style="width: 100%">
+                                        <f:convertDateTime pattern="MM/dd/yyyy" />
                                     </p:datePicker>
-
-                                    <!-- Ticket From -->
-                                    <p:outputLabel
-                                        for="ticketNoFromDtdts"
-                                        value="Ticket No. From:"
-                                        style="
-                                            font-size: 14px;
-                                            font-weight: normal;
-                                            margin-top: 0.5rem;
-                                        "
-                                    />
-
-                                    <p:inputText
-                                        id="ticketNoFromDtdts"
-                                        value="#{generateBeanDTDTS.ticketNoFrom}"
-                                        style="width: 100%; font-size: 14px"
-                                    />
-
-                                    <!-- Ticket To -->
-                                    <p:outputLabel
-                                        for="ticketNoToDtdts"
-                                        value="Ticket No. To:"
-                                        style="
-                                            font-size: 14px;
-                                            font-weight: normal;
-                                            margin-top: 0.5rem;
-                                        "
-                                    />
-
-                                    <p:inputText
-                                        id="ticketNoToDtdts"
-                                        value="#{generateBeanDTDTS.ticketNoTo}"
-                                        style="width: 100%; font-size: 14px"
-                                    />
 
                                     <!-- Organization Code -->
                                     <p:outputLabel
                                         for="orgaCodeDtdts"
-                                        value="Org Code:"
+                                        value="Organization Unit Code (Org Code):"
                                         style="
                                             font-size: 14px;
                                             font-weight: normal;
                                             margin-top: 0.5rem;
                                         "
                                     />
-
-                                    <p:inputText
-                                        id="orgaCodeDtdts"
-                                        value="#{generateBeanDTDTS.orgaCode}"
-                                        maxlength="3"
-                                        style="width: 100%; font-size: 14px"
-                                    />
+                                    <p:inputText id="orgaCodeDtdts" value="#{dtdtsBean.orgaCode}" maxlength="3" style="width: 100%; font-size: 14px" />
                                 </p:panelGrid>
 
                                 <f:facet name="footer">
@@ -326,22 +213,13 @@
                                         value="Submit"
                                         icon="pi pi-check"
                                         styleClass="ui-button-success"
-                                        action="#{generateBeanDTDTS.generatePdf}"
+                                        action="#{dtdtsBean.generatePdf}"
                                         process="@form"
                                         update=":reportgenerationform:message :reportgenerationform:dtdtsReportPreview"
                                     />
 
                                     <!-- CLOSE -->
-                                    <p:commandButton
-                                        id="closebtn"
-                                        value="Close"
-                                        icon="pi pi-times"
-                                        type="button"
-                                        onclick="
-                                            PF('reportFilterDialog').hide()
-                                        "
-                                        styleClass="ui-button-secondary"
-                                    />
+                                    <p:commandButton id="closebtn" value="Close" icon="pi pi-times" type="button" onclick="PF('reportFilterDialog').hide()" styleClass="ui-button-secondary" />
                                 </f:facet>
                             </p:dialog>
 
@@ -356,17 +234,10 @@
                                 styleClass="rounded-dialog card-left-accent"
                             >
                                 <f:facet name="header">
-                                    <span class="dialog-title-accent"
-                                        >DDSOA Report Filters</span
-                                    >
+                                    <span class="dialog-title-accent">DDSOA Report Filters</span>
                                 </f:facet>
 
-                                <p:panelGrid
-                                    columns="4"
-                                    layout="grid"
-                                    styleClass="ui-panelgrid-blank ui-fluid"
-                                    style="padding: 10px"
-                                >
+                                <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank ui-fluid" style="padding: 10px">
                                     <p:outputLabel
                                         for="ddsoaFrom"
                                         value="Date From:"
@@ -376,16 +247,8 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-                                    <p:datePicker
-                                        id="ddsoaFrom"
-                                        value="#{generateBean.fromDate}"
-                                        pattern="MM/dd/yyyy"
-                                        showIcon="true"
-                                        style="width: 100%"
-                                    >
-                                        <f:convertDateTime
-                                            pattern="MM/dd/yyyy"
-                                        />
+                                    <p:datePicker id="ddsoaFrom" value="#{generateBean.fromDate}" pattern="MM/dd/yyyy" showIcon="true" style="width: 100%">
+                                        <f:convertDateTime pattern="MM/dd/yyyy" />
                                     </p:datePicker>
 
                                     <p:outputLabel
@@ -397,16 +260,8 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-                                    <p:datePicker
-                                        id="ddsoaTo"
-                                        value="#{generateBean.toDate}"
-                                        pattern="MM/dd/yyyy"
-                                        showIcon="true"
-                                        style="width: 100%"
-                                    >
-                                        <f:convertDateTime
-                                            pattern="MM/dd/yyyy"
-                                        />
+                                    <p:datePicker id="ddsoaTo" value="#{generateBean.toDate}" pattern="MM/dd/yyyy" showIcon="true" style="width: 100%">
+                                        <f:convertDateTime pattern="MM/dd/yyyy" />
                                     </p:datePicker>
 
                                     <p:outputLabel
@@ -418,11 +273,7 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-                                    <p:inputText
-                                        id="ticketNoFromDdsoa"
-                                        value="#{generateBean.ticketNoFrom}"
-                                        style="width: 100%; font-size: 14px"
-                                    />
+                                    <p:inputText id="ticketNoFromDdsoa" value="#{generateBean.ticketNoFrom}" style="width: 100%; font-size: 14px" />
 
                                     <p:outputLabel
                                         for="ticketNoToDdsoa"
@@ -433,11 +284,7 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-                                    <p:inputText
-                                        id="ticketNoToDdsoa"
-                                        value="#{generateBean.ticketNoTo}"
-                                        style="width: 100%; font-size: 14px"
-                                    />
+                                    <p:inputText id="ticketNoToDdsoa" value="#{generateBean.ticketNoTo}" style="width: 100%; font-size: 14px" />
 
                                     <p:outputLabel
                                         for="ddsoaOrgaCode"
@@ -448,12 +295,7 @@
                                             margin-top: 0.5rem;
                                         "
                                     />
-                                    <p:inputText
-                                        id="ddsoaOrgaCode"
-                                        value="#{generateBean.orgaCode}"
-                                        style="width: 100%"
-                                        maxlength="3"
-                                    />
+                                    <p:inputText id="ddsoaOrgaCode" value="#{generateBean.orgaCode}" style="width: 100%" maxlength="3" />
 
                                     <h:outputText value="" />
                                     <h:outputText value="" />
@@ -468,14 +310,7 @@
                                         process="@form"
                                         update=":reportgenerationform:message :reportgenerationform:ddsoaReportPreview"
                                     />
-                                    <p:commandButton
-                                        id="closeddsoabtn"
-                                        value="Close"
-                                        icon="pi pi-times"
-                                        type="button"
-                                        onclick="PF('ddsoaFilterDialog').hide()"
-                                        styleClass="ui-button-secondary"
-                                    />
+                                    <p:commandButton id="closeddsoabtn" value="Close" icon="pi pi-times" type="button" onclick="PF('ddsoaFilterDialog').hide()" styleClass="ui-button-secondary" />
                                 </f:facet>
                             </p:dialog>
 
@@ -490,24 +325,17 @@
                                 styleClass="rounded-dialog card-left-accent"
                             >
                                 <f:facet name="header">
-                                    <span class="dialog-title-accent"
-                                        >Jasper Generate</span
-                                    >
+                                    <span class="dialog-title-accent">Jasper Generate</span>
                                 </f:facet>
 
                                 <div class="form-section">
                                     <div class="form-section-title">
-                                        <i class="pi pi-filter"></i> Filter
-                                        Criteria
+                                        <i class="pi pi-filter"></i>
+                                        Filter Criteria
                                     </div>
                                     <div class="field-group">
-                                        <label for="testFilterInput"
-                                            >Ticket No:</label
-                                        >
-                                        <p:inputText
-                                            id="testFilterInput"
-                                            value="#{generateSingleFilterBean.testFilter}"
-                                        />
+                                        <label for="testFilterInput">Ticket No:</label>
+                                        <p:inputText id="testFilterInput" value="#{generateSingleFilterBean.testFilter}" />
                                     </div>
                                 </div>
 
@@ -520,72 +348,31 @@
                                         process="@form"
                                         update=":reportgenerationform:message :reportgenerationform:testJasperReportPreview"
                                     />
-                                    <p:commandButton
-                                        id="closeTestBtn"
-                                        value="Close"
-                                        icon="pi pi-times"
-                                        type="button"
-                                        onclick="PF('testFilterDialog').hide()"
-                                        styleClass="btn-cancel"
-                                    />
+                                    <p:commandButton id="closeTestBtn" value="Close" icon="pi pi-times" type="button" onclick="PF('activityReportDialog').hide()" styleClass="btn-cancel" />
                                 </f:facet>
                             </p:dialog>
 
-                            <!-- REPORT PREVIEW -->
+                            <!-- REPORT PREVIEWS -->
                             <!-- TEST JASPER PREVIEW -->
-                            <p:outputPanel
-                                id="testJasperReportPreview"
-                                style="display: block; margin-top: 20px"
-                            >
-                                <h:panelGroup
-                                    rendered="#{generateSingleFilterBean.reportGenerated}"
-                                >
-                                    <object
-                                        data="data:application/pdf;base64,#{generateSingleFilterBean.pdfBase64}"
-                                        type="application/pdf"
-                                        width="100%"
-                                        height="600px"
-                                    >
+                            <p:outputPanel id="testJasperReportPreview" style="display: block; margin-top: 20px">
+                                <h:panelGroup rendered="#{generateSingleFilterBean.reportGenerated}">
+                                    <object data="data:application/pdf;base64,#{generateSingleFilterBean.pdfBase64}" type="application/pdf" width="100%" height="600px">
                                         Your browser does not support PDFs.
                                     </object>
                                 </h:panelGroup>
                             </p:outputPanel>
 
-                            <!-- DTDTS -->
-                            <p:outputPanel
-                                id="dtdtsReportPreview"
-                                style="display: block; margin-top: 20px"
-                            >
-                                <h:panelGroup
-                                    rendered="#{generateBeanDTDTS.reportGenerated}"
-                                >
-                                    <object
-                                        data="data:application/pdf;base64,#{generateBeanDTDTS.pdfBase64}"
-                                        type="application/pdf"
-                                        width="100%"
-                                        height="600px"
-                                    >
-                                        Your browser does not support PDFs.
-                                    </object>
+                            <!-- DTDTS PREVIEW (Updated to use dtdtsBean) -->
+                            <p:outputPanel id="dtdtsReportPreview" style="display: block; margin-top: 20px">
+                                <h:panelGroup rendered="#{dtdtsBean.reportGenerated}">
+                                    <object data="data:application/pdf;base64,#{dtdtsBean.pdfBase64}" type="application/pdf" width="100%" height="600px">Your browser does not support PDFs.</object>
                                 </h:panelGroup>
                             </p:outputPanel>
 
-                            <!-- DDSOA -->
-                            <p:outputPanel
-                                id="ddsoaReportPreview"
-                                style="display: block; margin-top: 20px"
-                            >
-                                <h:panelGroup
-                                    rendered="#{generateBean.reportGenerated}"
-                                >
-                                    <object
-                                        data="data:application/pdf;base64,#{generateBean.pdfBase64}"
-                                        type="application/pdf"
-                                        width="100%"
-                                        height="600px"
-                                    >
-                                        Your browser does not support PDFs.
-                                    </object>
+                            <!-- DDSOA PREVIEW -->
+                            <p:outputPanel id="ddsoaReportPreview" style="display: block; margin-top: 20px">
+                                <h:panelGroup rendered="#{generateBean.reportGenerated}">
+                                    <object data="data:application/pdf;base64,#{generateBean.pdfBase64}" type="application/pdf" width="100%" height="600px">Your browser does not support PDFs.</object>
                                 </h:panelGroup>
                             </p:outputPanel>
                         </h:form>
@@ -597,8 +384,6 @@
         <!-- Core Scripts -->
         <script src="#{resource['js/adminlte.min.js']}" nonce="DDA"></script>
         <script src="#{resource['js/settings.js']}" nonce="DDA"></script>
-        <script
-            src="#{resource['js/bootstrap/bootstrap.bundle.min.js']}"
-        ></script>
+        <script src="#{resource['js/bootstrap/bootstrap.bundle.min.js']}"></script>
     </h:body>
 </html>
