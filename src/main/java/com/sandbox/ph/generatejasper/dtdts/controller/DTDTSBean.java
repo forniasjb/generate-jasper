@@ -10,6 +10,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -19,10 +28,6 @@ import org.slf4j.LoggerFactory;
 import com.sandbox.ph.generatejasper.dtdts.daoImpl.DTDTSDaoImpl;
 import com.sandbox.ph.generatejasper.dtdts.dto.DTDTSDto;
 
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Named;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -33,140 +38,127 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 @Named("dtdtsBean")
 @ViewScoped
 public class DTDTSBean implements Serializable {
+
+    // ═══════════════════════════════════════════════════════════
+    // ⚙️ CONSTANTS & CONFIGURATION
+    // ═══════════════════════════════════════════════════════════
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(DTDTSBean.class);
+
     private static final String MSG_REQUIRED = "Required";
     private static final String MSG_WARNING = "Warning";
     private static final String MSG_ERROR = "Error";
-
-    // =========================================================
-    // REPORT RESOURCE PATHS
-    // =========================================================
     private static final String LOG_SEPARATOR = "-------------------------------------------------";
+
     private static final String DTDTS_REPORT = "/reports/DTDTS.jrxml";
+    private static final String REPORT_FILE_NAME = "DTDTS_Report.pdf";
 
-    // =========================================================
-    // DAO
-    // =========================================================
+    // ═══════════════════════════════════════════════════════════
+    // 🗄️ CACHE (Performance Optimization)
+    // ═══════════════════════════════════════════════════════════
+    // ⚡ Cached to prevent compiling the JRXML on every request
+    private static JasperReport compiledDtdtsReport;
 
-    private transient DTDTSDaoImpl dtdtsDao = new DTDTSDaoImpl();
+    // ═══════════════════════════════════════════════════════════
+    // 💉 DEPENDENCY INJECTION
+    // ═══════════════════════════════════════════════════════════
+    @Inject
+    private DTDTSDaoImpl dtdtsDao;
 
-    // =========================================================
-    // DTDTS FILTERS
-    // =========================================================
-
+    // ═══════════════════════════════════════════════════════════
+    // 🔍 SEARCH FILTERS
+    // ═══════════════════════════════════════════════════════════
     private Date fromDate;
     private Date toDate;
     private String orgaCode;
 
-    // =========================================================
-    // REPORT OUTPUT
-    // =========================================================
-
+    // ═══════════════════════════════════════════════════════════
+    // 📄 REPORT OUTPUTS
+    // ═══════════════════════════════════════════════════════════
     private byte[] pdfBytes;
     private String pdfBase64;
     private boolean reportGenerated = false;
 
-    // =========================================================
-    // CONSTRUCTOR
-    // =========================================================
-
+    // ═══════════════════════════════════════════════════════════
+    // 🚀 INITIALIZATION
+    // ═══════════════════════════════════════════════════════════
     public DTDTSBean() {
         log.info("DTDTSBean initialized");
     }
 
-    // =========================================================
-    // GENERATE DTDTS PDF
-    // =========================================================
+    @PostConstruct
+    public void init() {
+        // 🛠️ Compile the report once when the bean is first created
+        if (compiledDtdtsReport == null) {
+            compileReportLocally();
+        }
+    }
 
+    private synchronized void compileReportLocally() {
+        if (compiledDtdtsReport == null) {
+            try (InputStream mainStream = DTDTSBean.class.getResourceAsStream(DTDTS_REPORT)) {
+                if (mainStream == null) {
+                    throw new IllegalStateException("DTDTS.jrxml was not found in " + DTDTS_REPORT);
+                }
+                log.info("Compiling DTDTS.jrxml initially...");
+                compiledDtdtsReport = JasperCompileManager.compileReport(mainStream);
+                log.info("✅ DTDTS.jrxml compiled and cached successfully.");
+            } catch (Exception e) {
+                log.error("❌ Failed to compile Jasper report on startup", e);
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // 🖨️ PDF GENERATION CORE LOGIC
+    // ═══════════════════════════════════════════════════════════
     public void generatePdf() {
-
         long startTime = System.currentTimeMillis();
 
         log.info(LOG_SEPARATOR);
-        log.info("START generatePdf() - DTDTDS Summary");
+        log.info("▶️ START generatePdf() - DTDTDS Summary");
         log.info(LOG_SEPARATOR);
 
         FacesContext context = FacesContext.getCurrentInstance();
-
         if (context == null) {
-            log.error("FacesContext is NULL.");
+            log.error("❌ FacesContext is NULL.");
             return;
         }
 
-        // =====================================================
-        // RESET PREVIOUS REPORT
-        // =====================================================
-
+        // 🧹 Reset previous state
         reportGenerated = false;
         pdfBytes = null;
         pdfBase64 = null;
 
-        // =====================================================
-        // VALIDATE FILTERS
-        // =====================================================
-
+        // 🛡️ Validation
         if (!isValidFilters(context)) {
             return;
         }
 
-        // =====================================================
-        // LOAD REPORT RESOURCES
-        // =====================================================
+        if (compiledDtdtsReport == null) {
+            addErrorMessage(context, "Report template is not available. Check server logs.");
+            return;
+        }
 
-        try (InputStream mainStream = DTDTSBean.class.getResourceAsStream(DTDTS_REPORT)) {
-
-            if (mainStream == null) {
-                throw new IllegalStateException("DTDTS.jrxml was not found in " + DTDTS_REPORT);
-            }
-
-            log.info("Found DTDTS report: {}", DTDTS_REPORT);
-
-            // =================================================
-            // COMPILE REPORT
-            // =================================================
-
-            log.info("Compiling DTDTS.jrxml...");
-            JasperReport dtdtsReport = JasperCompileManager.compileReport(mainStream);
-            log.info("DTDTS.jrxml compiled successfully.");
-
-            // =================================================
-            // GET DATA FROM DAO
-            // =================================================
-
+        try {
+            // 📥 Fetch Data
             log.info("Calling DTDTS DAO...");
-
-            List<DTDTSDto> rows = dtdtsDao.findDTDTSDataByCriteria(
-                    fromDate, toDate, orgaCode);
-
-            log.info("DTDTS records found: {}", rows != null ? rows.size() : 0);
-
-            // =================================================
-            // NO DATA
-            // =================================================
+            List<DTDTSDto> rows = dtdtsDao.findDTDTSDataByCriteria(fromDate, toDate, orgaCode);
+            log.info("📊 DTDTS records found: {}", rows != null ? rows.size() : 0);
 
             if (rows == null || rows.isEmpty()) {
-                context.addMessage(
-                        null,
-                        new FacesMessage(
-                                FacesMessage.SEVERITY_WARN,
-                                MSG_WARNING,
-                                "No data found for the selected DTDTS filters."));
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, MSG_WARNING,
+                        "No data found for the selected DTDTS filters."));
                 return;
             }
 
-            // =================================================
-            // COMPUTE TOTALS FOR PARAMETERS (Kung kailangan sa Summary)
-            // =================================================
-            BigDecimal totalDr = rows.stream().map(DTDTSDto::getLcDr).reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal totalCr = rows.stream().map(DTDTSDto::getLcCr).reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal totalOpn = rows.stream().map(DTDTSDto::getLcOpn).reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal totalCls = rows.stream().map(DTDTSDto::getLcCls).reduce(BigDecimal.ZERO, BigDecimal::add);
+            // 🧮 Compute Totals (Null-Safe)
+            BigDecimal totalDr = sumBigDecimals(rows, DTDTSDto::getLcDr);
+            BigDecimal totalCr = sumBigDecimals(rows, DTDTSDto::getLcCr);
+            BigDecimal totalOpn = sumBigDecimals(rows, DTDTSDto::getLcOpn);
+            BigDecimal totalCls = sumBigDecimals(rows, DTDTSDto::getLcCls);
 
-            // =================================================
-            // PARAMETERS
-            // =================================================
-
+            // 📝 Populate Report Parameters
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("prgid", "FA51003R");
             parameters.put("user", "jay");
@@ -174,7 +166,6 @@ public class DTDTSBean implements Serializable {
             parameters.put("filename", "DTDTS SUMMARY REPORT");
             parameters.put("date", new SimpleDateFormat("yyyy/MM/dd").format(new Date()));
 
-            // I-pass ang computed totals sa JRXML parameters
             parameters.put("lcOpnTotal", totalOpn);
             parameters.put("lcOpnTotalSign", "");
             parameters.put("lcDrTotal", totalDr);
@@ -182,130 +173,93 @@ public class DTDTSBean implements Serializable {
             parameters.put("lcClsTotal", totalCls);
             parameters.put("lcClsTotalSign", "");
 
-            log.info("DTDTS parameters prepared.");
-
-            // =================================================
-            // CREATE DATA SOURCE & FILL REPORT
-            // =================================================
-
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(rows);
+            // 🏗️ Build Data Source & Fill
             log.info("JRBeanCollectionDataSource created. Filling report...");
-
-            JasperPrint jasperPrint = JasperFillManager.fillReport(
-                    dtdtsReport,
-                    parameters,
-                    dataSource);
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(rows);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(compiledDtdtsReport, parameters, dataSource);
 
             if (jasperPrint == null || jasperPrint.getPages().isEmpty()) {
-                context.addMessage(
-                        null,
-                        new FacesMessage(
-                                FacesMessage.SEVERITY_WARN,
-                                MSG_WARNING,
-                                "No data generated in DTDTS report pages."));
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, MSG_WARNING,
+                        "No data generated in DTDTS report pages."));
                 return;
             }
 
-            log.info("Generated report pages: {}", jasperPrint.getPages().size());
-
-            // =================================================
-            // EXPORT PDF
-            // =================================================
-
+            // 📦 Export to PDF
             pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
             if (pdfBytes == null || pdfBytes.length == 0) {
-                reportGenerated = false;
-                context.addMessage(
-                        null,
-                        new FacesMessage(
-                                FacesMessage.SEVERITY_ERROR,
-                                MSG_ERROR,
-                                "Generated DTDTS PDF is empty."));
+                addErrorMessage(context, "Generated DTDTS PDF is empty.");
                 return;
             }
 
             pdfBase64 = Base64.getEncoder().encodeToString(pdfBytes);
             reportGenerated = true;
 
-            context.addMessage(
-                    null,
-                    new FacesMessage(
-                            FacesMessage.SEVERITY_INFO,
-                            "Success",
-                            "DTDTS report generated successfully."));
-
-            log.info("DTDTS PDF generated successfully. Size={} bytes", pdfBytes.length);
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "✅ DTDTS report generated successfully."));
+            log.info("📄 DTDTS PDF generated successfully. Size={} bytes", pdfBytes.length);
 
         } catch (Exception e) {
-            log.error("Failed to generate DTDTS report", e);
+            log.error("❌ Failed to generate DTDTS report", e);
             pdfBytes = null;
             pdfBase64 = null;
             reportGenerated = false;
 
-            String message = e.getMessage();
-            if (message == null || message.isBlank()) {
-                message = e.getClass().getSimpleName();
-            }
-
-            context.addMessage(
-                    null,
-                    new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR,
-                            MSG_ERROR,
-                            "Failed to generate DTDTS report: " + message));
+            String message = (e.getMessage() == null || e.getMessage().isBlank()) ? e.getClass().getSimpleName()
+                    : e.getMessage();
+            addErrorMessage(context, "Failed to generate DTDTS report: " + message);
         } finally {
-            long executionTime = System.currentTimeMillis() - startTime;
-            log.info("DTDTS execution time = {} ms", executionTime);
-            log.info("END generatePdf() - DTDTS Summary");
-            log.info(LOG_SEPARATOR);
+            log.info("⏱️ DTDTS execution time = {} ms", System.currentTimeMillis() - startTime);
+            log.info("⏹️ END generatePdf() - DTDTS Summary\n" + LOG_SEPARATOR);
         }
     }
 
-    // =========================================================
-    // VALIDATION
-    // =========================================================
+    // ═══════════════════════════════════════════════════════════
+    // 🛠️ HELPER METHODS
+    // ═══════════════════════════════════════════════════════════
 
+    /**
+     * 🧮 Safely sums BigDecimals, filtering out nulls to prevent
+     * NullPointerException.
+     */
+    private BigDecimal sumBigDecimals(List<DTDTSDto> rows, Function<DTDTSDto, BigDecimal> mapper) {
+        return rows.stream()
+                .map(mapper)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * 📢 Standardizes error messaging for JSF context.
+     */
+    private void addErrorMessage(FacesContext context, String detail) {
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, MSG_ERROR, detail));
+    }
+
+    /**
+     * 🛡️ Validates user inputs before report generation.
+     */
     private boolean isValidFilters(FacesContext context) {
         if (fromDate == null || toDate == null) {
-            context.addMessage(
-                    null,
-                    new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR,
-                            MSG_REQUIRED,
-                            "From Date and To Date are required for DTDTS."));
+            addErrorMessage(context, "From Date and To Date are required for DTDTS.");
             return false;
         }
-
         if (fromDate.after(toDate)) {
-            context.addMessage(
-                    null,
-                    new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR,
-                            "Invalid Date Range",
-                            "From Date cannot be later than To Date."));
+            addErrorMessage(context, "From Date cannot be later than To Date.");
             return false;
         }
-
         if (orgaCode == null || orgaCode.isBlank()) {
-            context.addMessage(
-                    null,
-                    new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR,
-                            MSG_REQUIRED,
-                            "Organization Unit Code is required for DTDTS."));
+            addErrorMessage(context, "Organization Unit Code is required for DTDTS.");
             return false;
         }
-
         return true;
     }
 
-    // =========================================================
-    // CLEAR FILTERS
-    // =========================================================
-
+    /**
+     * 🧹 Resets all filters and clears the generated report from memory.
+     */
     public void clearFilters() {
-        log.info("Clearing DTDTS filters...");
+        log.info("🧹 Clearing DTDTS filters...");
         fromDate = null;
         toDate = null;
         orgaCode = null;
@@ -314,26 +268,23 @@ public class DTDTSBean implements Serializable {
         reportGenerated = false;
     }
 
-    // =========================================================
-    // DOWNLOAD PDF
-    // =========================================================
-
+    /**
+     * 📥 Provides the StreamedContent required by PrimeFaces <p:fileDownload>.
+     */
     public StreamedContent getFile() {
         if (pdfBytes == null || pdfBytes.length == 0) {
             return null;
         }
-
-        return DefaultStreamedContent
-                .builder()
-                .name("DTDTS_Report.pdf")
+        return DefaultStreamedContent.builder()
+                .name(REPORT_FILE_NAME)
                 .contentType("application/pdf")
                 .stream(() -> new ByteArrayInputStream(pdfBytes))
                 .build();
     }
 
-    // =========================================================
-    // GETTERS / SETTERS
-    // =========================================================
+    // ═══════════════════════════════════════════════════════════
+    // 🔄 GETTERS & SETTERS
+    // ═══════════════════════════════════════════════════════════
 
     public Date getFromDate() {
         return fromDate;
@@ -370,7 +321,6 @@ public class DTDTSBean implements Serializable {
     public String getPdfBase64() {
         return pdfBase64;
     }
-
     public void setPdfBase64(String pdfBase64) {
         this.pdfBase64 = pdfBase64;
     }

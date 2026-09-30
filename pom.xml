@@ -1,25 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- 📛 PROJECT IDENTITY                                          -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
     <groupId>com.sandbox.com</groupId>
     <artifactId>generate-jasper</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>generate-jasper</name>
-    <packaging>war</packaging>
+    <packaging>war</packaging>  <!-- 📦 Deployed as WAR to servlet container -->
 
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- ⚙️ BUILD PROPERTIES                                          -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.target>21</maven.compiler.target>  <!-- ☕ Java 21 LTS -->
         <maven.compiler.source>21</maven.compiler.source>
-        <junit.version>5.9.2</junit.version>
+        <junit.version>5.9.2</junit.version>              <!-- 🧪 JUnit 5 -->
     </properties>
 
     <dependencies>
 
-        <!-- Source: https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- 🧰 UTILITIES & BOILERPLATE REDUCTION                     -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+
+        <!-- 🪄 Lombok — @Getter/@Setter/@Builder/@Slf4j etc.
+             NOTE: scope=compile is unusual; normally "provided" -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -27,40 +38,47 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- Hibernate - Jakarta -->
-        <!-- ============================================================ -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- 🗄️ PERSISTENCE — JPA / HIBERNATE                        -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+
+        <!-- 🐘 Hibernate ORM 6 — Jakarta Persistence 3.1 impl -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>6.6.9.Final</version>
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- MariaDB -->
-        <!-- ============================================================ -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- 🔌 DATABASE DRIVERS                                       -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+
+        <!-- 🐬 MariaDB JDBC Driver -->
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <version>3.5.3</version>
         </dependency>
 
+        <!-- 🖥️ jt400 — IBM i (AS/400) access, DB2 for i -->
         <dependency>
             <groupId>net.sf.jt400</groupId>
             <artifactId>jt400</artifactId>
             <version>10.5</version>
         </dependency>
 
-        <!-- Source: https://mvnrepository.com/artifact/com.ibm.db2/jcc -->
+        <!-- 🏦 IBM DB2 JDBC Driver (jcc) — used by DTDTS DAO (db2PU) -->
         <dependency>
             <groupId>com.ibm.db2</groupId>
             <artifactId>jcc</artifactId>
             <version>11.5.8.0</version>
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- PrimeFaces -->
-        <!-- ============================================================ -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- 🎨 JSF / PRIMEFACES — UI LAYER                            -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+
+        <!-- 🎭 PrimeFaces 15 — Jakarta classifier for Faces 4.0 -->
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
@@ -68,108 +86,96 @@
             <classifier>jakarta</classifier>
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- Jakarta Faces 4.0 -->
-        <!-- ============================================================ -->
+        <!-- 🖼️ Mojarra — Jakarta Faces 4.0 impl -->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.faces</artifactId>
             <version>4.0.11</version>
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- Jakarta Persistence -->
-        <!-- ============================================================ -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- 💉 JAKARTA EE SPECS — API ONLY                            -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+
+        <!-- 🗃️ Jakarta Persistence API (EntityManager, @PersistenceContext) -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
             <version>3.1.0</version>
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- Jakarta EL -->
-        <!-- ============================================================ -->
+        <!-- 🧮 Jakarta Expression Language API -->
         <dependency>
             <groupId>jakarta.el</groupId>
             <artifactId>jakarta.el-api</artifactId>
             <version>5.0.0</version>
         </dependency>
 
-
-        <!-- ============================================================ -->
-        <!-- Jakarta Servlet API -->
-        <!-- Provided by Jetty 12 -->
-        <!-- ============================================================ -->
+        <!-- 🌐 Jakarta Servlet API — provided by container (Jetty 12) -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
             <version>6.0.0</version>
-            <scope>provided</scope>
+            <scope>provided</scope>  <!-- ⚠️ Do NOT bundle in WAR -->
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- CDI API -->
-        <!-- ============================================================ -->
+        <!-- 💉 CDI API — @Inject, @Named, @ApplicationScoped, etc. -->
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <version>4.0.1</version>
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- Weld CDI for Jetty 12 (EE10) -->
-        <!-- ============================================================ -->
+        <!-- 🔥 Weld CDI — implementation for Jetty 12 (EE10) -->
         <dependency>
             <groupId>org.jboss.weld.servlet</groupId>
             <artifactId>weld-servlet-core</artifactId>
             <version>5.1.2.Final</version>
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- Apache Commons IO -->
-        <!-- ============================================================ -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.16.1</version>
-        </dependency>
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- 📊 REPORTING — JASPERREPORTS                             -->
+        <!-- ═══════════════════════════════════════════════════════ -->
 
-        <!-- ============================================================ -->
-        <!-- JasperReports -->
-        <!-- ============================================================ -->
+        <!-- 📄 JasperReports 6.21 — PDF/XLSX/CSV generation -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>6.21.3</version>
+            <!-- ⚠️ TIP: exclude commons-logging and add jcl-over-slf4j
+                 if you see duplicate log bindings -->
         </dependency>
 
+        <!-- 🎼 Groovy — required by JRXML expressions in Jasper 6.x -->
         <dependency>
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>
             <version>4.0.15</version>
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- SLF4J -->
-        <!-- ============================================================ -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- 🪵 LOGGING — SLF4J + LOGBACK                            -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+
+        <!-- 📝 SLF4J API — used in your DTDTSBean -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>2.0.17</version>
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- Logback -->
-        <!-- ============================================================ -->
+        <!-- 🎯 Logback Classic — SLF4J binding + implementation -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.5.18</version>
         </dependency>
 
-        <!-- ============================================================ -->
-        <!-- JUnit -->
-        <!-- ============================================================ -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- 🧪 TESTING — JUnit 5                                     -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+
+        <!-- 🧬 JUnit Jupiter API — annotations & assertions -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -177,6 +183,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- ⚙️ JUnit Jupiter Engine — test runner -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -186,41 +193,69 @@
 
     </dependencies>
 
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- 🏗️ BUILD CONFIGURATION                                     -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
     <build>
-        <finalName>generate-jasper</finalName>
+        <finalName>generate-jasper</finalName>  <!-- 📦 Output: generate-jasper.war -->
+
         <plugins>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- 📦 WAR PLUGIN — packages the webapp                -->
+            <!-- ═══════════════════════════════════════════════════ -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
             </plugin>
 
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- 🚀 JETTY MAVEN PLUGIN — `mvn jetty:run`             -->
+            <!-- ═══════════════════════════════════════════════════ -->
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>11.0.26</version>
+                <version>11.0.26</version>  <!-- ⚠️ Jetty 11 = EE9;
+                                                 Jetty 12 = EE10.
+                                                 See note below ↓ -->
 
                 <configuration>
+
+                    <!-- 🌐 HTTP port -->
                     <httpConnector>
                         <port>8090</port>
                     </httpConnector>
 
+                    <!-- 🛣️ Deploy path: http://localhost:8090/generate-jasper -->
                     <webApp>
                         <contextPath>/generate-jasper</contextPath>
                     </webApp>
 
-                    <!-- ===== MIME Type Mappings for Fonts ===== -->
+                    <!-- ═══════════════════════════════════════════ -->
+                    <!-- 🔤 MIME Type Mappings for Web Fonts          -->
+                    <!-- Needed so PrimeFaces icons/fonts load       -->
+                    <!-- ═══════════════════════════════════════════ -->
                     <systemProperties>
                         <systemProperty>
                             <name>org.eclipse.jetty.servlet.Default.mimeTypes</name>
                             <value>
-                                ttf=application/x-font-ttf,woff=application/font-woff,woff2=application/font-woff2,otf=application/x-font-otf,eot=application/vnd.ms-fontobject,svg=image/svg+xml,ico=image/x-icon</value>
+                                ttf=application/x-font-ttf,
+                                woff=application/font-woff,
+                                woff2=application/font-woff2,
+                                otf=application/x-font-otf,
+                                eot=application/vnd.ms-fontobject,
+                                svg=image/svg+xml,
+                                ico=image/x-icon
+                            </value>
                         </systemProperty>
                     </systemProperties>
 
+                    <!-- 📄 Explicit web.xml location -->
                     <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 </project>

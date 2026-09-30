@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -69,7 +68,11 @@ public class DTDTSDaoImpl implements Serializable {
         return Integer.parseInt(sdf.format(date));
     }
 
-    private void logInputFilters(Date fromDate, Date toDate, Integer fDateNum, Integer tDateNum, String orga) {
+    private void logInputFilters(Date fromDate,
+                                Date toDate,
+                                Integer fDateNum,
+                                Integer tDateNum,
+                                String orga) {
         LOGGER.info("=== DTDTS SUMMARY REPORT FILTER DEBUG ===");
         LOGGER.info(() -> String.format("From Date (Date): %s | Converted Integer: %d", fromDate, fDateNum));
         LOGGER.info(() -> String.format("To Date (Date): %s | Converted Integer: %d", toDate, tDateNum));
@@ -110,6 +113,7 @@ public class DTDTSDaoImpl implements Serializable {
 
         return dto;
     }
+
     private String getStringValue(Object obj) {
         if (obj == null) {
             return "";
@@ -132,9 +136,11 @@ public class DTDTSDaoImpl implements Serializable {
         return JasperFillManager.fillReport(jasperReport, safeParameters, dataSource);
     }
 
-    public JasperPrint generateDtdtsReport(InputStream reportTemplateStream, Map<String, Object> parameters,
-                                           Date fromDate, Date toDate, String orga) throws JRException {
-
+    public JasperPrint generateDtdtsReport(InputStream reportTemplateStream,
+                                        Map<String, Object> parameters,
+                                        Date fromDate,
+                                        Date toDate,
+                                        String orga) throws JRException {
         JasperReport jasperReport = JasperCompileManager.compileReport(reportTemplateStream);
         return generateDtdtsReport(jasperReport, parameters, fromDate, toDate, orga);
     }

@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c05e1de4-31fe-4bea-acc1-30e79fd4a348" name="Changes" comment="" />
+    <list default="true" id="c05e1de4-31fe-4bea-acc1-30e79fd4a348" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/sandbox/ph/generatejasper/dtdts/controller/DTDTSBean.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sandbox/ph/generatejasper/dtdts/controller/DTDTSBean.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/sandbox/ph/generatejasper/dtdts/daoImpl/DTDTSDaoImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sandbox/ph/generatejasper/dtdts/daoImpl/DTDTSDaoImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/reports/Activity Report.jasper" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/reports/Activity Report.jasper" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,9 +25,16 @@
   <component name="FindBugs-IDEA-Workspace">
     <toolWindowGroupBy>Class</toolWindowGroupBy>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 3
+}]]></component>
   <component name="ProjectId" id="3J1wgJmCeuCFR7N99YcORkyKGQu" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -33,14 +44,17 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -48,8 +62,24 @@
       <recent name="D:\ProjectsDevelopment\generate-jasper\src\main\resources" />
     </key>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.19416.15" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.19416.15" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c05e1de4-31fe-4bea-acc1-30e79fd4a348" name="Changes" comment="" />
+      <created>1790652724614</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1790652724614</updated>
+      <workItem from="1790652726031" duration="178000" />
+    </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

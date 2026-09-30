@@ -27,10 +27,9 @@
 	<parameter name="beginningBalance" class="java.math.BigDecimal">
 		<defaultValueExpression><![CDATA[new BigDecimal("0.00")]]></defaultValueExpression>
 	</parameter>
-    <!-- ADD NEW PARAMETER HERE -->
-    <parameter name="testFilter" class="java.lang.String">
-        <defaultValueExpression><![CDATA[""]]></defaultValueExpression>
-    </parameter>
+	<parameter name="testFilter" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
     CAST(a.ORGAUNIT AS VARCHAR(20)) AS RC_CODE,
@@ -396,7 +395,6 @@ FETCH FIRST 10 ROWS ONLY]]>
 		</band>
 	</detail>
 	<columnFooter>
-
 		<band height="10" splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
